@@ -7,8 +7,9 @@ History
 Date        Author      Status      Description
 2024.11.03  이유민      Created     
 2024.11.03  이유민      Modified    리본 리메이크 제품 요청 기능 추가
+2024.11.06  이유민      Modified    리본 리메이크 제품 추천 기능 추가
 */
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Get, Query } from '@nestjs/common';
 import { RemakeService } from 'src/modules/remake/remake.service';
 import { Remake } from 'src/modules/remake/remake.entity';
 
@@ -19,5 +20,10 @@ export class RemakeController {
   @Post()
   async create(@Body() remakeData: Partial<Remake>): Promise<Remake> {
     return this.remakeService.createRemake(remakeData);
+  }
+
+  @Get()
+  async recommendProduct(@Query('thing') thing: string): Promise<object> {
+    return this.remakeService.recommendRemake(thing);
   }
 }

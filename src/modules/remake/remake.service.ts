@@ -18,13 +18,14 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RemakeService {
+  private readonly aiServer: string;
+
   constructor(
     private readonly remakeRepository: RemakeRepository,
     private readonly httpService: HttpService,
     private configService: ConfigService,
-    private readonly aiServer: string,
   ) {
-    this.aiServer = this.configService.get('AI_SERVER_URL');
+    this.aiServer = this.configService.get<string>('AI_SERVER_URL');
   }
 
   async createRemake(remakeData: Partial<Remake>): Promise<Remake> {

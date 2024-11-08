@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.03  이유민      Created     
 2024.11.03  이유민      Modified    리본 리메이크 제품 추천 기능 추가
 2024.11.06  이유민      Modified    리본 리메이크 제품 요청 기능 추가
+2024.11.08  이유민      Modified    리본 리메이크 제품 조회 추가
 */
 import {
   Body,
@@ -37,5 +38,10 @@ export class RemakeController {
   @Get()
   async recommendProduct(@Query('thing') thing: string) {
     return this.remakeService.recommendRemake(thing);
+  }
+
+  @Get('/product')
+  async findRemakeProductAll() {
+    return this.remakeService.findRemakeProductAll();
   }
 }

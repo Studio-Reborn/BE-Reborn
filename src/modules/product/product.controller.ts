@@ -8,6 +8,8 @@ Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    상품 등록 기능 추가
 2024.11.08  이유민      Modified    상품 RUD 추가
+2024.11.08  이유민      Modified    리본 리메이크 제품 분리
+2024.11.12  이유민      Modified    UseGuards 추가
 */
 import {
   Controller,
@@ -17,29 +19,37 @@ import {
   Delete,
   Body,
   BadRequestException,
+  UnauthorizedException,
   Param,
   Query,
+  Req,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductDTO } from 'src/modules/product/product.dto';
 import { ProductService } from 'src/modules/product/product.service';
+import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post('')
-  async createProduct(@Body() productDTO: ProductDTO) {
+  @UseGuards(JwtAuthGuard)
+  async createProduct(@Req() req, @Body() productDTO: ProductDTO) {
     const { theme, name, detail, price } = productDTO;
+
+    if (!req.user.user_id)
+      throw new UnauthorizedException('로그인 후 이용 가능합니다.');
 
     if (!theme || !name || !detail || !price)
       throw new BadRequestException('입력하지 않은 값이 있습니다.');
 
-    if (!['user', 'market', 'reborn'].includes(theme))
+    if (!['user', 'market'].includes(theme))
       throw new BadRequestException('theme에 잘못된 값이 입력되었습니다.');
 
     await this.productService.createProduct({
-      user_id: 1,
+      user_id: req.user.user_id,
       product_image_id: 1,
       theme,
       name,

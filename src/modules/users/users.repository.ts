@@ -53,7 +53,7 @@ export class UsersRepository {
 
     return user;
   }
-  
+
   async updateNickname(id: number, nickname: string): Promise<object> {
     const user = await this.findUserById(id);
 

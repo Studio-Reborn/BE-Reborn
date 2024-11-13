@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    회원 기능 추가
 2024.11.13  이유민      Modified    사용자 정보 조회 추가
+2024.11.13  이유민      Modified    닉네임 수정 추가
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -50,5 +51,13 @@ export class UsersRepository {
       .getOne();
 
     return user;
+  }
+  async updateNickname(id: number, nickname: string): Promise<object> {
+    const user = await this.findUserById(id);
+
+    Object.assign(user, { nickname });
+    await this.usersRepository.save(user);
+
+    return { message: '닉네임이 변경되었습니다.' };
   }
 }

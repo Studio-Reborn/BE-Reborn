@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.11.07  이유민      Modified    회원 기능 추가
 2024.11.12  이유민      Modified    jwt 추가
 2024.11.13  이유민      Modified    토큰 검증 추가
+2024.11.13  이유민      Modified    비밀번호 변경 추가
 */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthRepository } from 'src/modules/auth/auth.repository';
@@ -66,5 +67,12 @@ export class AuthService {
 
   async findPasswordById(id: number): Promise<Auth | undefined> {
     return this.authRepository.findPasswordById(id);
+  }
+
+  async updatePassword(
+    id: number,
+    hashedChangePassword: string,
+  ): Promise<object> {
+    return this.authRepository.updatePassword(id, hashedChangePassword);
   }
 }

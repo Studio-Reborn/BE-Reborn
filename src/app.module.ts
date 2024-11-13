@@ -4,11 +4,14 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RemakeModule } from 'src/modules/remake/remake.module';
+import { AuthModule } from 'src/modules/auth/auth.module';
+import { ProductModule } from 'src/modules/product/product.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -21,6 +24,8 @@ import { RemakeModule } from 'src/modules/remake/remake.module';
       synchronize: true,
     }),
     RemakeModule,
+    AuthModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    회원 기능 추가
+2024.11.13  이유민      Modified    사용자 정보 조회 추가
 */
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from 'src/modules/users/users.repository';
@@ -26,5 +27,9 @@ export class UsersService {
 
   async findUserByPhone(phone: string): Promise<Users | undefined> {
     return this.usersRepository.findUserByPhone(phone);
+  }
+
+  async findUserById(id: number): Promise<Users> {
+    return this.usersRepository.findUserById(id);
   }
 }

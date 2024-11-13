@@ -3,12 +3,21 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 import { RemakeModule } from 'src/modules/remake/remake.module';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { ProductModule } from 'src/modules/product/product.module';
+import { UsersModule } from 'src/modules/users/users.module';
+import { UploadModule } from 'src/modules/upload/upload.module';
+import { ProfileModule } from 'src/modules/profile_image/profile_image.module';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads', // 정적 파일의 URL 경로를 /uploads로 설정
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -26,6 +35,9 @@ import { ProductModule } from 'src/modules/product/product.module';
     RemakeModule,
     AuthModule,
     ProductModule,
+    UsersModule,
+    UploadModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

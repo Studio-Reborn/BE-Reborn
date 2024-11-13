@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    회원 기능 추가
 2024.11.13  이유민      Modified    사용자 정보 조회 추가
+2024.11.13  이유민      Modified    프로필 이미지 변경 추가
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -50,5 +51,17 @@ export class UsersRepository {
       .getOne();
 
     return user;
+  }
+
+  async updateProfileImageId(
+    id: number,
+    profile_image_id: number,
+  ): Promise<object> {
+    const user = await this.findUserById(id);
+
+    Object.assign(user, { profile_image_id });
+    await this.usersRepository.save(user);
+
+    return { message: '프로필 이미지가 변경되었습니다.' };
   }
 }

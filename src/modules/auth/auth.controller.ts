@@ -8,18 +8,18 @@ Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    회원 기능 추가
 2024.11.12  이유민      Modified    jwt 추가
+2024.11.13  이유민      Modified    토큰 검증 추가
 */
 import {
   Controller,
   Post,
   Body,
-  //   Get,
-  //   Req,
-  //   UseGuards,
+  Get,
   UnauthorizedException,
   BadRequestException,
   ConflictException,
   Res,
+  Headers,
 } from '@nestjs/common';
 import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
@@ -34,6 +34,7 @@ export class AuthController {
     private readonly usersService: UsersService,
   ) {}
 
+  // 회원가입
   @Post('/signup')
   async signup(@Body() signupDTO: SignUpDTO) {
     const { nickname, email, password, phone } = signupDTO;
@@ -63,6 +64,7 @@ export class AuthController {
     return { message: '회원가입 완료' };
   }
 
+  // 로그인
   @Post('/signin')
   async signin(@Body() signinDTO: SignInDTO, @Res() res: Response) {
     const { email, password } = signinDTO;
@@ -91,5 +93,18 @@ export class AuthController {
     } else {
       throw new UnauthorizedException('이메일 또는 비밀번호가 잘못되었습니다.');
     }
+  }
+
+  // 토큰 검증
+  @Get('verify')
+  async verifyToken(@Headers('Authorization') authorization: string) {
+    // 토큰 추출
+    const token = authorization.split(' ')[1];
+
+    if (!token) {
+      throw new UnauthorizedException('Token not found');
+    }
+
+    return await this.authService.verifyToken(token);
   }
 }

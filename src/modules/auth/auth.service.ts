@@ -8,8 +8,9 @@ Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    회원 기능 추가
 2024.11.12  이유민      Modified    jwt 추가
+2024.11.13  이유민      Modified    토큰 검증 추가
 */
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthRepository } from 'src/modules/auth/auth.repository';
 import { Auth } from 'src/modules/auth/auth.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -54,9 +55,13 @@ export class AuthService {
   }
 
   async verifyToken(accessToken: string): Promise<object> {
-    const verified = this.jwtService.verify(accessToken);
+    try {
+      const verified = this.jwtService.verify(accessToken);
 
-    return verified;
+      return verified;
+    } catch {
+      throw new UnauthorizedException('인증되지 않은 토큰입니다.');
+    }
   }
 
   async findPasswordById(id: number): Promise<Auth | undefined> {

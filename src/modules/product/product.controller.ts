@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.11.08  이유민      Modified    상품 RUD 추가
 2024.11.08  이유민      Modified    리본 리메이크 제품 분리
 2024.11.12  이유민      Modified    UseGuards 추가
+2024.11.13  이유민      Modified    jwt 관련 파일 경로 수정
 */
 import {
   Controller,
@@ -28,12 +29,13 @@ import {
 } from '@nestjs/common';
 import { ProductDTO } from 'src/modules/product/product.dto';
 import { ProductService } from 'src/modules/product/product.service';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/modules/auth/jwt/jwt-auth.guard';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  // 제품 생성
   @Post('')
   @UseGuards(JwtAuthGuard)
   async createProduct(@Req() req, @Body() productDTO: ProductDTO) {
@@ -60,6 +62,7 @@ export class ProductController {
     return { message: '제품 등록에 성공했습니다.' };
   }
 
+  // 제품 전체 조회
   @Get()
   async findProductAll(
     @Query('theme') theme: string,
@@ -70,11 +73,13 @@ export class ProductController {
     return await this.productService.findProductAll(theme, sort);
   }
 
+  // 제품 상세 조회
   @Get(':id')
   async findProductOne(@Param('id', ParseIntPipe) id: number) {
     return await this.productService.findProductOneById(id);
   }
 
+  // 제품 수정
   @Patch(':id')
   async updateProduct(
     @Param('id', ParseIntPipe) id: number,
@@ -83,6 +88,7 @@ export class ProductController {
     return await this.productService.updateProductById(id, productDTO);
   }
 
+  // 제품 삭제
   @Delete(':id')
   async deleteProduct(@Param('id', ParseIntPipe) id: number) {
     return await this.productService.deleteProductById(id);

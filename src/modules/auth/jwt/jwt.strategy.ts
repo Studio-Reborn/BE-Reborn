@@ -23,7 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    // 토큰에서 해독된 내용을 반환합니다.
     return { user_id: payload.user_id, email: payload.email };
   }
 }

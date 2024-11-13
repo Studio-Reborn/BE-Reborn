@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.11.06  이유민      Modified    리본 리메이크 제품 요청 기능 추가
 2024.11.08  이유민      Modified    리본 리메이크 제품 조회 추가
 2024.11.12  이유민      Modified    UseGuards 추가
+2024.11.13  이유민      Modified    jwt 관련 파일 경로 수정
 */
 import {
   Body,
@@ -22,7 +23,7 @@ import {
   BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/modules/auth/jwt/jwt-auth.guard';
 import { RemakeService } from 'src/modules/remake/remake.service';
 import { RemakeDTO } from 'src/modules/remake/remake.dto';
 
@@ -30,6 +31,7 @@ import { RemakeDTO } from 'src/modules/remake/remake.dto';
 export class RemakeController {
   constructor(private readonly remakeService: RemakeService) {}
 
+  // 리본 리메이크 제품 요청
   @Post('/request')
   @UseGuards(JwtAuthGuard)
   async create(@Req() req, @Body() remakeDTO: RemakeDTO) {
@@ -47,11 +49,13 @@ export class RemakeController {
     });
   }
 
+  // 리본 리메이크 제품 추천받기
   @Get()
   async recommendProduct(@Query('thing') thing: string) {
     return this.remakeService.recommendRemake(thing);
   }
 
+  // 리본 리메이크 제품 전체 조회
   @Get('/product')
   async findRemakeProductAll() {
     return this.remakeService.findRemakeProductAll();

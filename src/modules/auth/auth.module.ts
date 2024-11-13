@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    회원 기능 추가
 2024.11.12  이유민      Modified    jwt 추가
+2024.11.13  이유민      Modified    jwt 관련 파일 경로 수정
 */
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -21,7 +22,7 @@ import { UsersService } from 'src/modules/users/users.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from 'src/modules/auth/jwt.strategy';
+import { JwtStrategy } from 'src/modules/auth/jwt/jwt.strategy';
 
 @Module({
   imports: [

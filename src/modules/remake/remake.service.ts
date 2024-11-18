@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.11.03  이유민      Modified    리본 리메이크 제품 요청 기능 추가
 2024.11.06  이유민      Modified    리본 리메이크 제품 추천 기능 추가
 2024.11.08  이유민      Modified    리본 리메이크 제품 조회 추가
+2024.11.18  이유민      Modified    리본 리메이크 제품 CRUD 추가
 */
 import { Injectable } from '@nestjs/common';
 import { RemakeRepository } from 'src/modules/remake/remake.repository';
@@ -29,10 +30,12 @@ export class RemakeService {
     this.aiServer = this.configService.get<string>('AI_SERVER_URL');
   }
 
+  // 리메이크 요청 생성
   async createRemake(remakeData: Partial<Remake>): Promise<Remake> {
     return this.remakeRepository.createRemake(remakeData);
   }
 
+  // 리메이크 추천
   async recommendRemake(thing: string): Promise<object> {
     const data = await firstValueFrom(
       this.httpService.get(`${this.aiServer}/recommend?thing=${thing}`),
@@ -41,7 +44,33 @@ export class RemakeService {
     return data.data;
   }
 
+  // 리메이크 제품 생성
+  async createRemakeProduct(
+    productData: Partial<RemakeProduct>,
+  ): Promise<object> {
+    return this.remakeRepository.createRemakeProduct(productData);
+  }
+
+  // 리메이크 제품 전체 조회
   async findRemakeProductAll(): Promise<RemakeProduct[]> {
     return await this.remakeRepository.findRemakeProductAll();
+  }
+
+  // 리메이크 제품 개별 조회
+  async findRemakeProductById(id: number): Promise<RemakeProduct> {
+    return await this.remakeRepository.findRemakeProductById(id);
+  }
+
+  // 리메이크 제품 수정
+  async updateRemakeProductById(
+    id: number,
+    updateData: Partial<RemakeProduct>,
+  ): Promise<object> {
+    return await this.remakeRepository.updateRemakeProductById(id, updateData);
+  }
+
+  // 리메이크 제품 삭제
+  async deleteRemakeProductById(id: number): Promise<object> {
+    return await this.remakeRepository.deleteRemakeProductById(id);
   }
 }

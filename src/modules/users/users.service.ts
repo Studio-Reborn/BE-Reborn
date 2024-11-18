@@ -38,7 +38,7 @@ export class UsersService {
   async updateNickname(id: number, nickname: string): Promise<object> {
     return this.usersRepository.updateNickname(id, nickname);
   }
-  
+
   async updateProfileImageId(
     id: number,
     profile_image_id: number,

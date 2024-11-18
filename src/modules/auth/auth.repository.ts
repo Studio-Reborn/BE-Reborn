@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    회원 기능 추가
 2024.11.12  이유민      Modified    jwt 추가
+2024.11.13  이유민      Modified    비밀번호 변경 추가
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -33,6 +34,18 @@ export class AuthRepository {
 
     Object.assign(auth, { refresh_token: token });
     await this.authRepository.save(auth);
+  }
+
+  async updatePassword(
+    id: number,
+    hashedChangePassword: string,
+  ): Promise<object> {
+    const auth = await this.findAuthById(id);
+
+    Object.assign(auth, { password: hashedChangePassword });
+    await this.authRepository.save(auth);
+
+    return { message: '비밀번호가 변경되었습니다.' };
   }
 
   async findAuthById(id: number): Promise<Auth> {

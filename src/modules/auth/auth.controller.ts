@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.11.07  이유민      Modified    회원 기능 추가
 2024.11.12  이유민      Modified    jwt 추가
 2024.11.13  이유민      Modified    토큰 검증 추가
+2024.11.13  이유민      Modified    비밀번호 변경 추가
 */
 import {
   Controller,
@@ -20,12 +21,16 @@ import {
   ConflictException,
   Res,
   Headers,
+  Patch,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { SignUpDTO, SignInDTO } from 'src/modules/auth/auth.dto';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { UsersService } from 'src/modules/users/users.service';
+import { JwtAuthGuard } from 'src/modules/auth/jwt/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -106,5 +111,31 @@ export class AuthController {
     }
 
     return await this.authService.verifyToken(token);
+  }
+
+  // 비밀번호 변경
+  @Patch('/change-password')
+  @UseGuards(JwtAuthGuard)
+  async updatePassword(
+    @Req() req,
+    @Body() body: { password: string; changePassword: string },
+  ) {
+    const { password, changePassword } = body;
+
+    if (!req.user.user_id)
+      throw new UnauthorizedException('로그인 후 이용 가능합니다.');
+
+    if (!password || !changePassword)
+      throw new BadRequestException('입력하지 않은 값이 있습니다.');
+
+    const authData = await this.authService.findPasswordById(req.user.user_id);
+
+    if (!(await bcrypt.compare(password, authData['password'])))
+      throw new UnauthorizedException('현재 비밀번호가 틀렸습니다.');
+
+    return await this.authService.updatePassword(
+      req.user.user_id,
+      bcrypt.hashSync(changePassword, 10),
+    );
   }
 }

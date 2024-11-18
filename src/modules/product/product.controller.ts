@@ -11,6 +11,7 @@ Date        Author      Status      Description
 2024.11.08  이유민      Modified    리본 리메이크 제품 분리
 2024.11.12  이유민      Modified    UseGuards 추가
 2024.11.13  이유민      Modified    jwt 관련 파일 경로 수정
+2024.11.18  이유민      Modified    swagger 추가
 */
 import {
   Controller,
@@ -30,14 +31,25 @@ import {
 import { ProductDTO } from 'src/modules/product/product.dto';
 import { ProductService } from 'src/modules/product/product.service';
 import { JwtAuthGuard } from 'src/modules/auth/jwt/jwt-auth.guard';
+import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
 
 @Controller('product')
+@ApiTags('중고거래 및 에코마켓 제품 API')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   // 제품 생성
   @Post('')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '제품 생성 API',
+    description: '중고거래 또는 에코마켓의 제품을 생성한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
   async createProduct(@Req() req, @Body() productDTO: ProductDTO) {
     const { theme, name, detail, price } = productDTO;
 
@@ -64,6 +76,10 @@ export class ProductController {
 
   // 제품 전체 조회
   @Get()
+  @ApiOperation({
+    summary: '제품 전체 조회 API',
+    description: '중고거래 또는 에코마켓의 제품을 전체 조회한다.',
+  })
   async findProductAll(
     @Query('theme') theme: string,
     @Query('sort') sort?: string,
@@ -75,12 +91,25 @@ export class ProductController {
 
   // 제품 상세 조회
   @Get(':id')
+  @ApiOperation({
+    summary: '제품 개별 조회 API',
+    description: '중고거래 또는 에코마켓의 제품을 개별 조회한다.',
+  })
   async findProductOne(@Param('id', ParseIntPipe) id: number) {
     return await this.productService.findProductOneById(id);
   }
 
   // 제품 수정
   @Patch(':id')
+  @ApiOperation({
+    summary: '제품 수정 API',
+    description: '중고거래 또는 에코마켓의 제품을 수정한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
   async updateProduct(
     @Param('id', ParseIntPipe) id: number,
     @Body() productDTO: ProductDTO,
@@ -90,6 +119,15 @@ export class ProductController {
 
   // 제품 삭제
   @Delete(':id')
+  @ApiOperation({
+    summary: '제품 삭제 API',
+    description: '중고거래 또는 에코마켓의 제품을 삭제한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
   async deleteProduct(@Param('id', ParseIntPipe) id: number) {
     return await this.productService.deleteProductById(id);
   }

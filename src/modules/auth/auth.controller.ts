@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.11.12  이유민      Modified    jwt 추가
 2024.11.13  이유민      Modified    토큰 검증 추가
 2024.11.13  이유민      Modified    비밀번호 변경 추가
+2024.11.18  이유민      Modified    swagger 추가
 */
 import {
   Controller,
@@ -31,8 +32,10 @@ import { SignUpDTO, SignInDTO } from 'src/modules/auth/auth.dto';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { UsersService } from 'src/modules/users/users.service';
 import { JwtAuthGuard } from 'src/modules/auth/jwt/jwt-auth.guard';
+import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
 
 @Controller('auth')
+@ApiTags('회원 API')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -41,6 +44,10 @@ export class AuthController {
 
   // 회원가입
   @Post('/signup')
+  @ApiOperation({
+    summary: '회원가입 API',
+    description: '리본 서비스에 가입한다.',
+  })
   async signup(@Body() signupDTO: SignUpDTO) {
     const { nickname, email, password, phone } = signupDTO;
 
@@ -71,6 +78,10 @@ export class AuthController {
 
   // 로그인
   @Post('/signin')
+  @ApiOperation({
+    summary: '로그인 API',
+    description: '리본 서비스에 로그인한다.',
+  })
   async signin(@Body() signinDTO: SignInDTO, @Res() res: Response) {
     const { email, password } = signinDTO;
 
@@ -102,6 +113,10 @@ export class AuthController {
 
   // 토큰 검증
   @Get('verify')
+  @ApiOperation({
+    summary: '토큰 검증 API',
+    description: 'JWT 토큰을 검증한다.',
+  })
   async verifyToken(@Headers('Authorization') authorization: string) {
     // 토큰 추출
     const token = authorization.split(' ')[1];
@@ -116,6 +131,15 @@ export class AuthController {
   // 비밀번호 변경
   @Patch('/change-password')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '비밀번호 변경 API',
+    description: '비밀번호를 변경한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
   async updatePassword(
     @Req() req,
     @Body() body: { password: string; changePassword: string },

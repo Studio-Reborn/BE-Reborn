@@ -84,7 +84,18 @@ export class RemakeController {
       '관리자는 요청 받은 제품을 토대로 리본 리메이크 제품을 생성한다.',
   })
   async createRemakeProduct(@Body() remakeProductDTO: RemakeProductDTO) {
-    return this.remakeService.createRemakeProduct(remakeProductDTO);
+    const { matter, price, detail, name } = remakeProductDTO;
+
+    if (!matter || !name || !detail || !price)
+      throw new BadRequestException('입력하지 않은 값이 있습니다.');
+
+    return this.remakeService.createRemakeProduct({
+      product_image_id: 1, // 임시
+      matter,
+      price,
+      detail,
+      name,
+    });
   }
 
   // 리본 리메이크 제품 전체 조회

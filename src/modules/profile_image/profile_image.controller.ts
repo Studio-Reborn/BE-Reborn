@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.13  이유민      Created     
 2024.11.13  이유민      Modified    프로필 이미지 추가
 2024.11.18  이유민      Modified    swagger 추가
+2024.11.19  이유민      Modified    id로 프로필 이미지 조회 추가
 */
 import {
   Controller,
@@ -15,6 +16,8 @@ import {
   UnauthorizedException,
   Req,
   UseGuards,
+  ParseIntPipe,
+  Param,
 } from '@nestjs/common';
 import { ProfileService } from 'src/modules/profile_image/profile_image.service';
 import { UsersService } from 'src/modules/users/users.service';
@@ -48,5 +51,15 @@ export class ProfileController {
     const user = await this.usersService.findUserById(req.user.user_id);
 
     return await this.profileService.findProfileById(user.profile_image_id);
+  }
+
+  // 타인 프로필 이미지 조회
+  @Get(':id')
+  @ApiOperation({
+    summary: '프로필 이미지 조회 API',
+    description: 'id를 이용해 프로필 이미지를 조회한다.',
+  })
+  async findProfileById(@Param('id', ParseIntPipe) id: number) {
+    return await this.profileService.findProfileById(id);
   }
 }

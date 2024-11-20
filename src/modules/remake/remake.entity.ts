@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.03  이유민      Created     
 2024.11.03  이유민      Modified    리본 리메이크 제품 요청 기능 추가
 2024.11.08  이유민      Modified    리본 리메이크 제품 분리
+2024.11.19  이유민      Modified    detail 타입 변경
 */
 import {
   Entity,
@@ -44,7 +45,7 @@ export class RemakeProduct {
   @Column({ nullable: false })
   name: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'longtext', nullable: false })
   detail: string;
 
   @Column()

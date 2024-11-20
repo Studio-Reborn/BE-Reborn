@@ -12,6 +12,7 @@ Date        Author      Status      Description
 2024.11.12  이유민      Modified    UseGuards 추가
 2024.11.13  이유민      Modified    jwt 관련 파일 경로 수정
 2024.11.18  이유민      Modified    swagger 추가
+2024.11.20  이유민      Modified    상품 이미지 추가
 */
 import {
   Controller,
@@ -51,7 +52,7 @@ export class ProductController {
     required: true,
   })
   async createProduct(@Req() req, @Body() productDTO: ProductDTO) {
-    const { theme, name, detail, price } = productDTO;
+    const { theme, name, detail, price, product_image_id } = productDTO;
 
     if (!req.user.user_id)
       throw new UnauthorizedException('로그인 후 이용 가능합니다.');
@@ -64,7 +65,7 @@ export class ProductController {
 
     await this.productService.createProduct({
       user_id: req.user.user_id,
-      product_image_id: 1,
+      product_image_id,
       theme,
       name,
       detail,

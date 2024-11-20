@@ -9,8 +9,18 @@ Date        Author      Status      Description
 2024.11.13  이유민      Modified    사용자 정보 조회 추가
 2024.11.13  이유민      Modified    닉네임 수정 추가
 2024.11.18  이유민      Modified    swagger 추가
+2024.11.19  이유민      Modified    id로 사용자 정보 조회 추가
 */
-import { Controller, Get, Patch, Req, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Req,
+  Param,
+  Body,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/modules/auth/jwt/jwt-auth.guard';
 import { UsersService } from 'src/modules/users/users.service';
 import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
@@ -20,7 +30,7 @@ import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // 사용자 정보 조회
+  // 본인 정보 조회
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
@@ -32,8 +42,18 @@ export class UsersController {
     description: 'Bearer 토큰 형식의 JWT',
     required: true,
   })
-  async findUserById(@Req() req) {
+  async findMyUserInfo(@Req() req) {
     return await this.usersService.findUserById(req.user.user_id);
+  }
+
+  // 사용자 정보 조회
+  @Get(':id')
+  @ApiOperation({
+    summary: '사용자 정보 조회 API',
+    description: 'user_id를 이용해 사용자 정보를 조회한다.',
+  })
+  async findUserById(@Param('id', ParseIntPipe) id: number) {
+    return await this.usersService.findUserById(id);
   }
 
   // 닉네임 수정

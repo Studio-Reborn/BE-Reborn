@@ -11,6 +11,7 @@ import { ProductModule } from 'src/modules/product/product.module';
 import { UsersModule } from 'src/modules/users/users.module';
 import { UploadModule } from 'src/modules/upload/upload.module';
 import { ProfileModule } from 'src/modules/profile_image/profile_image.module';
+import { MarketModule } from 'src/modules/market/market.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ProfileModule } from 'src/modules/profile_image/profile_image.module';
     UsersModule,
     UploadModule,
     ProfileModule,
+    MarketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

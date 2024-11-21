@@ -20,6 +20,9 @@ import { ProfileService } from 'src/modules/profile_image/profile_image.service'
 import { Users } from 'src/modules/users/users.entity';
 import { UsersRepository } from 'src/modules/users/users.repository';
 import { UsersService } from 'src/modules/users/users.service';
+import { ProductImage } from 'src/modules/product_image/product_image.entity';
+import { ProductImageRepository } from 'src/modules/product_image/product_image.repository';
+import { ProductImageService } from 'src/modules/product_image/product_image.service';
 
 @Module({
   imports: [
@@ -37,9 +40,16 @@ import { UsersService } from 'src/modules/users/users.service';
         fileSize: 10 * 1024 * 1024,
       },
     }),
-    TypeOrmModule.forFeature([Profile, Users]),
+    TypeOrmModule.forFeature([Profile, Users, ProductImage]),
   ],
-  providers: [ProfileRepository, ProfileService, UsersRepository, UsersService],
+  providers: [
+    ProfileRepository,
+    ProfileService,
+    UsersRepository,
+    UsersService,
+    ProductImageRepository,
+    ProductImageService,
+  ],
   controllers: [UploadController],
 })
 export class UploadModule {}

@@ -11,6 +11,7 @@ import { ProductModule } from 'src/modules/product/product.module';
 import { UsersModule } from 'src/modules/users/users.module';
 import { UploadModule } from 'src/modules/upload/upload.module';
 import { ProfileModule } from 'src/modules/profile_image/profile_image.module';
+import { ProductImageModule } from 'src/modules/product_image/product_image.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ProfileModule } from 'src/modules/profile_image/profile_image.module';
     UsersModule,
     UploadModule,
     ProfileModule,
+    ProductImageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

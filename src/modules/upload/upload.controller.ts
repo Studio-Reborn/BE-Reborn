@@ -8,19 +8,22 @@ Date        Author      Status      Description
 2024.11.13  이유민      Created     
 2024.11.13  이유민      Modified    프로필 이미지 업로드 추가
 2024.11.18  이유민      Modified    swagger 추가
+2024.11.20  이유민      Modified    상품 이미지 업로드 추가
 */
 import {
   Controller,
   Post,
   UseInterceptors,
   UploadedFile,
+  UploadedFiles,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/modules/auth/jwt/jwt-auth.guard';
 import { ProfileService } from 'src/modules/profile_image/profile_image.service';
 import { UsersService } from 'src/modules/users/users.service';
+import { ProductImageService } from 'src/modules/product_image/product_image.service';
 import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
 
 @Controller('upload')
@@ -29,6 +32,7 @@ export class UploadController {
   constructor(
     private readonly profileService: ProfileService,
     private readonly usersService: UsersService,
+    private readonly productImageService: ProductImageService,
   ) {}
 
   // 프로필 이미지 업로드
@@ -55,5 +59,19 @@ export class UploadController {
       profile_image.id,
     );
     return { message: '프로필 이미지가 변경되었습니다.' };
+  }
+
+  // 상품 이미지 업로드
+  @Post('/product-image')
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadProductImages(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    const imagesUrl = [];
+    for (let i = 0; i < files.length; i++) imagesUrl.push(files[i].path);
+
+    return await this.productImageService.createProductImage({
+      url: imagesUrl,
+    });
   }
 }

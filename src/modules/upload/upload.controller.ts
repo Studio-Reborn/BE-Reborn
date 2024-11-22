@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.11.13  이유민      Modified    프로필 이미지 업로드 추가
 2024.11.18  이유민      Modified    swagger 추가
 2024.11.20  이유민      Modified    상품 이미지 업로드 추가
+2024.11.21  이유민      Modified    에코마켓 프로필 이미지 업로드 추가
 */
 import {
   Controller,
@@ -18,13 +19,14 @@ import {
   UploadedFiles,
   Req,
   UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/modules/auth/jwt/jwt-auth.guard';
+import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
 import { ProfileService } from 'src/modules/profile_image/profile_image.service';
 import { UsersService } from 'src/modules/users/users.service';
 import { ProductImageService } from 'src/modules/product_image/product_image.service';
-import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
 
 @Controller('upload')
 @ApiTags('파일 업로드 API')
@@ -35,7 +37,7 @@ export class UploadController {
     private readonly productImageService: ProductImageService,
   ) {}
 
-  // 프로필 이미지 업로드
+  // 회원 프로필 이미지 업로드
   @Post('/profile')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
@@ -59,6 +61,31 @@ export class UploadController {
       profile_image.id,
     );
     return { message: '프로필 이미지가 변경되었습니다.' };
+  }
+
+  // 에코마켓 프로필 이미지 업로드
+  @Post('/profile/eco-market')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({
+    summary: '에코마켓 프로필 이미지 파일 업로드 API',
+    description: '에코마켓 프로필 이미지를 업로드한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async uploadEcoMarketProfile(
+    @Req() req,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!req.user)
+      throw new UnauthorizedException('로그인 후 이용 가능합니다.');
+
+    return await this.profileService.createProfile({
+      url: file.path,
+    });
   }
 
   // 상품 이미지 업로드

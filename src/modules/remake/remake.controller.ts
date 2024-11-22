@@ -13,6 +13,7 @@ Date        Author      Status      Description
 2024.11.13  이유민      Modified    jwt 관련 파일 경로 수정
 2024.11.18  이유민      Modified    리본 리메이크 제품 CRUD 추가
 2024.11.18  이유민      Modified    swagger 추가
+2024.11.22  이유민      Modified    임시 코드 제거
 */
 import {
   Body,
@@ -84,13 +85,13 @@ export class RemakeController {
       '관리자는 요청 받은 제품을 토대로 리본 리메이크 제품을 생성한다.',
   })
   async createRemakeProduct(@Body() remakeProductDTO: RemakeProductDTO) {
-    const { matter, price, detail, name } = remakeProductDTO;
+    const { matter, price, detail, name, product_image_id } = remakeProductDTO;
 
     if (!matter || !name || !detail || !price)
       throw new BadRequestException('입력하지 않은 값이 있습니다.');
 
     return this.remakeService.createRemakeProduct({
-      product_image_id: 1, // 임시
+      product_image_id,
       matter,
       price,
       detail,

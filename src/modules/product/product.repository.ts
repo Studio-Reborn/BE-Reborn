@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    상품 등록 기능 추가
 2024.11.08  이유민      Modified    상품 RUD 추가
+2024.11.21  이유민      Modified    사용자별 판매 제품 조회 추가
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -45,6 +46,19 @@ export class ProductRepository {
     if (!product) throw new NotFoundException('상품을 찾을 수 없습니다.');
 
     return product;
+  }
+
+  async findProductByUserId(
+    user_id: number,
+    theme: string,
+  ): Promise<Product[]> {
+    return await this.productRepository
+      .createQueryBuilder('product')
+      .where(
+        'product.user_id = :user_id AND product.theme = :theme AND product.deleted_at IS NULL',
+        { user_id, theme },
+      )
+      .getMany();
   }
 
   async updateProductById(

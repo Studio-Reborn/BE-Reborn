@@ -13,6 +13,8 @@ Date        Author      Status      Description
 2024.11.13  이유민      Modified    jwt 관련 파일 경로 수정
 2024.11.18  이유민      Modified    swagger 추가
 2024.11.20  이유민      Modified    상품 이미지 추가
+2024.11.21  이유민      Modified    사용자별 판매 제품 조회 추가
+2024.11.21  이유민      Modified    제품 상세 조회 경로 변경
 */
 import {
   Controller,
@@ -52,7 +54,8 @@ export class ProductController {
     required: true,
   })
   async createProduct(@Req() req, @Body() productDTO: ProductDTO) {
-    const { theme, name, detail, price, product_image_id } = productDTO;
+    const { theme, name, detail, price, product_image_id, market_id } =
+      productDTO;
 
     if (!req.user.user_id)
       throw new UnauthorizedException('로그인 후 이용 가능합니다.');
@@ -64,7 +67,7 @@ export class ProductController {
       throw new BadRequestException('theme에 잘못된 값이 입력되었습니다.');
 
     await this.productService.createProduct({
-      user_id: req.user.user_id,
+      user_id: theme === 'market' ? market_id : req.user.user_id,
       product_image_id,
       theme,
       name,
@@ -90,8 +93,21 @@ export class ProductController {
     return await this.productService.findProductAll(theme, sort);
   }
 
+  // user 판매 제품 조회
+  @Get('/category')
+  @ApiOperation({
+    summary: '사용자별 판매 제품 조회 API',
+    description: '사용자별 중고거래 또는 에코마켓 판매 제품을 조회한다.',
+  })
+  async findProductByUserId(
+    @Query('user_id', ParseIntPipe) user_id: number,
+    @Query('theme') theme: string,
+  ) {
+    return await this.productService.findProductByUserId(user_id, theme);
+  }
+
   // 제품 상세 조회
-  @Get(':id')
+  @Get('/details/:id')
   @ApiOperation({
     summary: '제품 개별 조회 API',
     description: '중고거래 또는 에코마켓의 제품을 개별 조회한다.',

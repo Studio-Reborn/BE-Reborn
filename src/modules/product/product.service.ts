@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    상품 등록 기능 추가
 2024.11.08  이유민      Modified    상품 RUD 추가
+2024.11.21  이유민      Modified    사용자별 판매 제품 조회 추가
 */
 import { Injectable } from '@nestjs/common';
 import { ProductRepository } from 'src/modules/product/product.repository';
@@ -27,6 +28,13 @@ export class ProductService {
 
   async findProductOneById(id: number): Promise<Product> {
     return this.productRepository.findProductById(id);
+  }
+
+  async findProductByUserId(
+    user_id: number,
+    theme: string,
+  ): Promise<Product[]> {
+    return this.productRepository.findProductByUserId(user_id, theme);
   }
 
   async updateProductById(

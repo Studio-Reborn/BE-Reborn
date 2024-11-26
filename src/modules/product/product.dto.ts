@@ -10,16 +10,38 @@ Date        Author      Status      Description
 2024.11.08  이유민      Modified    리본 리메이크 제품 분리
 2024.11.20  이유민      Modified    상품 이미지 추가
 2024.11.21  이유민      Modified    market_id 추가
+2024.11.26  이유민      Modified    상품 테이블 분리
 */
-import { IsInt, IsString, IsNotEmpty, IsIn } from 'class-validator';
+import { IsInt, IsString, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ProductDTO {
+export class UserProductDTO {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  product_image_id: number;
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @IsIn(['user', 'market'])
-  theme: string;
+  name: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  detail: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  price: number;
+}
+
+export class MarketProductDTO {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  product_image_id: number;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -39,9 +61,5 @@ export class ProductDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsInt()
-  product_image_id: number;
-
-  @ApiProperty()
-  @IsInt()
-  market_id: number;
+  quantity: number;
 }

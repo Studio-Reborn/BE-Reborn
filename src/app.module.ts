@@ -13,6 +13,7 @@ import { UploadModule } from 'src/modules/upload/upload.module';
 import { ProfileModule } from 'src/modules/profile_image/profile_image.module';
 import { ProductImageModule } from 'src/modules/product_image/product_image.module';
 import { MarketModule } from 'src/modules/market/market.module';
+import { BillingModule } from 'src/modules/billing/billing.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { MarketModule } from 'src/modules/market/market.module';
     ProfileModule,
     ProductImageModule,
     MarketModule,
+    BillingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

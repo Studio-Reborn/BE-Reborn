@@ -1,15 +1,14 @@
 /**
-File Name : product.entity
-Description : 상품 Entity
+File Name : market_product.entity
+Description : 에코마켓 상품 Entity
 Author : 이유민
 
 History
 Date        Author      Status      Description
-2024.11.07  이유민      Created     
-2024.11.07  이유민      Modified    상품 등록 기능 추가
-2024.11.08  이유민      Modified    리본 리메이크 제품 분리
-2024.11.19  이유민      Modified    price 타입 변경
-2024.11.21  이유민      Modified    detail 타입 변경
+2024.11.26  이유민      Created     
+2024.11.26  이유민      Modified    상품 테이블 분리
+2024.11.26  이유민      Modified    상품 상태 추가
+2024.11.26  이유민      Modified    상품 수량 추가
 */
 import {
   Entity,
@@ -20,23 +19,16 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 
-@Entity('product')
-export class Product {
+@Entity('market_product')
+export class MarketProduct {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ nullable: false })
-  user_id: number;
+  market_id: number;
 
   @Column({ nullable: false })
   product_image_id: number;
-
-  @Column({
-    type: 'enum',
-    enum: ['user', 'market'],
-    default: 'user',
-  })
-  theme: string;
 
   @Column({ nullable: false })
   name: string;
@@ -46,6 +38,12 @@ export class Product {
 
   @Column({ nullable: false, type: 'bigint' })
   price: number;
+
+  @Column({ nullable: false, type: 'bigint' })
+  quantity: number;
+
+  @Column({ nullable: false, default: '판매중' })
+  status: string;
 
   @CreateDateColumn()
   created_at: Date;

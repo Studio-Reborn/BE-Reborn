@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.11.26  이유민      Modified    상품 테이블 분리
 2024.11.26  이유민      Modified    상품 상태 추가
 2024.11.26  이유민      Modified    상품 수량 추가
+2024.11.27  이유민      Modified    status 수정
 */
 import {
   Entity,
@@ -42,7 +43,12 @@ export class MarketProduct {
   @Column({ nullable: false, type: 'bigint' })
   quantity: number;
 
-  @Column({ nullable: false, default: '판매중' })
+  @Column({
+    type: 'enum',
+    enum: ['판매중', '품절', '판매중단', '숨김'],
+    nullable: false,
+    default: '판매중',
+  })
   status: string;
 
   @CreateDateColumn()

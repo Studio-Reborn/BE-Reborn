@@ -8,6 +8,8 @@ Date        Author      Status      Description
 2024.11.24  이유민      Created     
 2024.11.24  이유민      Modified    결제 추가
 2024.11.24  이유민      Modified    주문 추가
+2024.11.27  이유민      Modified    userId로 구매내역 조회 추가
+2024.11.28  이유민      Modified    order_items category 추가
 */
 import { Injectable } from '@nestjs/common';
 import { PaymentRepository } from 'src/modules/billing/repository/payments.repository';
@@ -48,6 +50,7 @@ export class BillingService {
       detail_address,
       extra_address,
       order_items,
+      category,
     } = tossPaymentDTO;
 
     // 결제
@@ -86,6 +89,7 @@ export class BillingService {
       quantity: item.quantity,
       price: item.price,
       total_price: item.price * item.quantity,
+      category,
     }));
 
     await this.orderItemsRepository.createOrderItems(orderItemsData);
@@ -135,5 +139,15 @@ export class BillingService {
   // user_id로 조회
   async findBillingByUserId(user_id: number): Promise<object[]> {
     return await this.orderRepository.findOrderByUserId(user_id);
+  }
+
+  // 에코마켓 구매내역 조회
+  async findMarketPurchasesByUserId(user_id: number): Promise<object[]> {
+    return await this.orderRepository.findMarketPurchasesByUserId(user_id);
+  }
+
+  // 리본 리메이크 구매내역 조회
+  async findRemakePurchasesByUserId(user_id: number): Promise<object[]> {
+    return await this.orderRepository.findRemakePurchasesByUserId(user_id);
   }
 }

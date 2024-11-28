@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.11.03  이유민      Modified    리본 리메이크 제품 요청 기능 추가
 2024.11.08  이유민      Modified    리본 리메이크 제품 조회 추가
 2024.11.18  이유민      Modified    리본 리메이크 제품 CRUD 추가
+2024.11.28  이유민      Modified    리본 리메이크 제품 개별 조회 수정
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -52,8 +53,23 @@ export class RemakeRepository {
   async findRemakeProductById(id: number): Promise<RemakeProduct> {
     return await this.remakeProductRepository
       .createQueryBuilder('rproduct')
+      .leftJoin(
+        'product_image',
+        'product_image',
+        'rproduct.product_image_id = product_image.id',
+      )
+      .select([
+        'rproduct.name AS name',
+        'rproduct.id AS id',
+        'rproduct.price AS price',
+        'rproduct.detail AS detail',
+        'rproduct.product_image_id AS product_image_id',
+        'rproduct.matter AS matter',
+        '"리본(Reborn)" AS market_name',
+        'product_image.url',
+      ])
       .where('rproduct.id = :id AND rproduct.deleted_at IS NULL', { id })
-      .getOne();
+      .getRawOne();
   }
 
   // 리메이크 제품 수정

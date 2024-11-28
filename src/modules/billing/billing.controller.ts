@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.24  이유민      Created     
 2024.11.24  이유민      Modified    결제 추가
 2024.11.24  이유민      Modified    주문 추가
+2024.11.27  이유민      Modified    userId로 구매내역 조회 추가
 */
 import {
   Controller,
@@ -76,26 +77,43 @@ export class BillingController {
     );
   }
 
-  // Toss Payment 결제
-  @Get()
+  @Get('/purchase/eco-market')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '결제 API',
-    description: '토스 페이먼츠 결제 후 주문 및 결제 데이터를 생성한다.',
+    summary: '에코마켓 구매내역 조회 API',
+    description: '사용자 본인의 에코마켓 구매내역을 조회한다.',
   })
   @ApiHeader({
     name: 'Authorization',
     description: 'Bearer 토큰 형식의 JWT',
     required: true,
   })
-  async findBillingByUserId(@Req() req) {
+  async findMarketPurchasesByUserId(@Req() req) {
     if (!req.user)
       throw new UnauthorizedException('로그인 후 이용 가능합니다.');
 
-    const orders = await this.billingService.findBillingByUserId(
+    return await this.billingService.findMarketPurchasesByUserId(
       req.user.user_id,
     );
+  }
 
-    return orders;
+  @Get('/purchase/reborn-remake')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '리본 리메이크 구매내역 조회 API',
+    description: '사용자 본인의 리본 리메이크 구매내역을 조회한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async findRemakePurchasesByUserId(@Req() req) {
+    if (!req.user)
+      throw new UnauthorizedException('로그인 후 이용 가능합니다.');
+
+    return await this.billingService.findRemakePurchasesByUserId(
+      req.user.user_id,
+    );
   }
 }

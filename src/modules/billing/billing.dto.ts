@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.11.24  이유민      Modified    결제 추가
 2024.11.24  이유민      Modified    주문 추가
 2024.11.26  이유민      Modified    주문 제품 추가
+2024.11.28  이유민      Modified    category 추가
 */
 import { IsInt, IsString, IsNotEmpty, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -65,6 +66,10 @@ export class TossPaymentDTO {
   @ApiProperty()
   @IsString()
   extra_address: string;
+
+  @ApiProperty()
+  @IsString()
+  category: string;
 
   @ApiProperty()
   @IsArray()

@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.11.26  이유민      Created     
 2024.11.26  이유민      Modified    주문 제품 추가
+2024.11.28  이유민      Modified    category 추가
 */
 import {
   Entity,
@@ -34,6 +35,14 @@ export class OrderItems {
 
   @Column({ nullable: false })
   total_price: number;
+
+  @Column({
+    type: 'enum',
+    enum: ['market', 'reborn'],
+    nullable: false,
+    default: 'market',
+  })
+  category: string;
 
   @CreateDateColumn()
   created_at: Date;

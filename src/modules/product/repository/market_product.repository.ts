@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.11.26  이유민      Created     
 2024.11.26  이유민      Modified    상품 테이블 분리
+2024.11.28  이유민      Modified    마켓 제품 개별 조회 수정
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -42,8 +43,22 @@ export class MarketProductRepository {
   async findProductById(id: number): Promise<MarketProduct> {
     const product = await this.marketProductRepository
       .createQueryBuilder('product')
+      .leftJoin('market', 'market', 'product.market_id = market.id')
+      .leftJoin(
+        'product_image',
+        'product_image',
+        'product.product_image_id = product_image.id',
+      )
+      .select([
+        'product.name AS name',
+        'product.id AS id',
+        'product.price AS price',
+        'product.detail AS detail',
+        'market.market_name AS market_name',
+        'product_image.url',
+      ])
       .where('product.id = :id AND product.deleted_at IS NULL', { id })
-      .getOne();
+      .getRawOne();
 
     if (!product) throw new NotFoundException('상품을 찾을 수 없습니다.');
 

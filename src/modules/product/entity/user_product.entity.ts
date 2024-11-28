@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.26  이유민      Created     
 2024.11.26  이유민      Modified    상품 테이블 분리
 2024.11.26  이유민      Modified    상품 상태 추가
+2024.11.27  이유민      Modified    status 수정
 */
 import {
   Entity,
@@ -38,7 +39,12 @@ export class UserProduct {
   @Column({ nullable: false, type: 'bigint' })
   price: number;
 
-  @Column({ nullable: false, default: '판매중' })
+  @Column({
+    type: 'enum',
+    enum: ['판매중', '예약중', '판매완료', '숨김'],
+    nullable: false,
+    default: '판매중',
+  })
   status: string;
 
   @CreateDateColumn()

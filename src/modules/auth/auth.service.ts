@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.11.12  이유민      Modified    jwt 추가
 2024.11.13  이유민      Modified    토큰 검증 추가
 2024.11.13  이유민      Modified    비밀번호 변경 추가
+2024.12.04  이유민      Modified    role 추가
 */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthRepository } from 'src/modules/auth/auth.repository';
@@ -33,8 +34,9 @@ export class AuthService {
     email: string,
     auth_id: number,
     res: Response,
+    role: string,
   ): Promise<object> {
-    const payload = { user_id, email };
+    const payload = { user_id, email, role };
 
     // refresh token
     const refreshToken = this.jwtService.sign(payload, {

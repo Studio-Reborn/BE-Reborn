@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.24  이유민      Created     
 2024.11.24  이유민      Modified    주문 추가
 2024.11.27  이유민      Modified    userId로 구매내역 조회 추가
+2024.12.04  이유민      Modified    코드 리팩토링
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -49,6 +50,7 @@ export class OrderRepository {
       )
       .select([
         'orders.id AS order_id',
+        'orders.created_at AS order_created_at',
         'orders.payments_id AS payments_id',
         'payments.method AS payments_method',
         'payments.status AS payments_status',
@@ -58,10 +60,12 @@ export class OrderRepository {
         'product.name AS product_name',
         'product_image.url AS product_image',
         'market.market_name AS market_name',
+        'market.id AS market_id',
       ])
       .where('orders.user_id = :user_id AND items.category = "market"', {
         user_id,
       })
+      .orderBy({ 'orders.created_at': 'DESC' })
       .getRawMany();
   }
 
@@ -70,7 +74,7 @@ export class OrderRepository {
       .createQueryBuilder('orders')
       .leftJoin('payments', 'payments', 'orders.payments_id = payments.id')
       .leftJoin('order_items', 'items', 'orders.id = items.order_id')
-      .leftJoin('market_product', 'product', 'items.product_id = product.id')
+      .leftJoin('remake_product', 'product', 'items.product_id = product.id')
       .leftJoin(
         'product_image',
         'product_image',
@@ -78,6 +82,7 @@ export class OrderRepository {
       )
       .select([
         'orders.id AS order_id',
+        'orders.created_at AS order_created_at',
         'orders.payments_id AS payments_id',
         'payments.method AS payments_method',
         'payments.status AS payments_status',
@@ -90,6 +95,7 @@ export class OrderRepository {
       .where('orders.user_id = :user_id AND items.category = "reborn"', {
         user_id,
       })
+      .orderBy({ 'orders.created_at': 'DESC' })
       .getRawMany();
   }
 }

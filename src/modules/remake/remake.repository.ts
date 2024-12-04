@@ -10,8 +10,10 @@ Date        Author      Status      Description
 2024.11.08  이유민      Modified    리본 리메이크 제품 조회 추가
 2024.11.18  이유민      Modified    리본 리메이크 제품 CRUD 추가
 2024.11.28  이유민      Modified    리본 리메이크 제품 개별 조회 수정
+2024.12.04  이유민      Modified    요청 조회 기능 추가
+2024.12.04  이유민      Modified    요청 삭제 기능 추가
 */
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Remake, RemakeProduct } from 'src/modules/remake/remake.entity';
@@ -29,6 +31,34 @@ export class RemakeRepository {
   async createRemake(remakeData: Partial<Remake>): Promise<Remake> {
     const remake = this.remakeRepository.create(remakeData);
     return await this.remakeRepository.save(remake);
+  }
+
+  // 리메이크 요청 제품 전체 조회
+  async findRequestProductAll(): Promise<Remake[]> {
+    return await this.remakeRepository
+      .createQueryBuilder('request')
+      .leftJoin('users', 'users', 'request.user_id = users.id')
+      .addSelect([
+        'users.nickname AS user_nickname',
+        'users.phone AS user_phone',
+      ])
+      .where('request.deleted_at IS NULL')
+      .getRawMany();
+  }
+
+  // 리메이크 요청 제품 삭제
+  async deleteRequestById(id: number): Promise<object> {
+    const request = await this.remakeRepository
+      .createQueryBuilder('request')
+      .where('request.id = :id AND request.deleted_at IS NULL', { id })
+      .getOne();
+
+    if (!request) throw new NotFoundException('리소스를 찾을 수 없습니다.');
+
+    request.deleted_at = new Date();
+    await this.remakeRepository.save(request);
+
+    return { message: '리메이크 요청이 성공적으로 삭제되었습니다.' };
   }
 
   // 리메이크 제품 생성

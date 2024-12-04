@@ -10,6 +10,8 @@ Date        Author      Status      Description
 2024.11.06  이유민      Modified    리본 리메이크 제품 추천 기능 추가
 2024.11.08  이유민      Modified    리본 리메이크 제품 조회 추가
 2024.11.18  이유민      Modified    리본 리메이크 제품 CRUD 추가
+2024.12.04  이유민      Modified    요청 조회 기능 추가
+2024.12.04  이유민      Modified    요청 삭제 기능 추가
 */
 import { Injectable } from '@nestjs/common';
 import { RemakeRepository } from 'src/modules/remake/remake.repository';
@@ -33,6 +35,16 @@ export class RemakeService {
   // 리메이크 요청 생성
   async createRemake(remakeData: Partial<Remake>): Promise<Remake> {
     return this.remakeRepository.createRemake(remakeData);
+  }
+
+  // 리메이크 요청 전체 조회
+  async findRequestProductAll(): Promise<Remake[]> {
+    return this.remakeRepository.findRequestProductAll();
+  }
+
+  // 리메이크 요청 삭제
+  async deleteRequestById(id: number): Promise<object> {
+    return this.remakeRepository.deleteRequestById(id);
   }
 
   // 리메이크 추천

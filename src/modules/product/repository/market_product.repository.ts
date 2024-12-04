@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.26  이유민      Created     
 2024.11.26  이유민      Modified    상품 테이블 분리
 2024.11.28  이유민      Modified    마켓 제품 개별 조회 수정
+2024.12.04  이유민      Modified    코드 리팩토링
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -54,6 +55,9 @@ export class MarketProductRepository {
         'product.id AS id',
         'product.price AS price',
         'product.detail AS detail',
+        'product.quantity AS quantity',
+        'product.status AS status',
+        'product.product_image_id AS product_image_id',
         'market.market_name AS market_name',
         'product_image.url',
       ])

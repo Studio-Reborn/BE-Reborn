@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.11.26  이유민      Created     
 2024.11.26  이유민      Modified    상품 테이블 분리
+2024.12.04  이유민      Modified    코드 리팩토링
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -53,10 +54,20 @@ export class UserProductRepository {
   async findProductByUserId(user_id: number): Promise<UserProduct[]> {
     return await this.userProductRepository
       .createQueryBuilder('product')
+      .leftJoin('product_image', 'image', 'product.product_image_id = image.id')
+      .select([
+        'product.id AS product_id',
+        'product.created_at AS product_created_at',
+        'product.name AS product_name',
+        'product.detail AS product_detail',
+        'product.price AS product_price',
+        'product.status AS product_status',
+        'image.url AS product_image',
+      ])
       .where('product.user_id = :user_id AND product.deleted_at IS NULL', {
         user_id,
       })
-      .getMany();
+      .getRawMany();
   }
 
   // id로 중고거래 제품 수정

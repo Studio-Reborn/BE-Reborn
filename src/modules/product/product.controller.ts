@@ -16,6 +16,7 @@ Date        Author      Status      Description
 2024.11.21  이유민      Modified    사용자별 판매 제품 조회 추가
 2024.11.21  이유민      Modified    제품 상세 조회 경로 변경
 2024.11.26  이유민      Modified    상품 테이블 분리
+2024.12.04  이유민      Modified    본인 정보 조회 추가
 */
 import {
   Controller,
@@ -100,6 +101,22 @@ export class ProductController {
     @Param('user_id', ParseIntPipe) user_id: number,
   ) {
     return await this.productService.findUserProductByUserId(user_id);
+  }
+
+  // 본인 중고거래 판매 제품 조회
+  @Get('/pre-loved/my')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '본인 중고거래 판매 제품 조회 API',
+    description: '본인 중고거래 판매 제품을 조회한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async findMyProductByUserId(@Req() req) {
+    return await this.productService.findUserProductByUserId(req.user.user_id);
   }
 
   // 중고거래 제품 상세 조회

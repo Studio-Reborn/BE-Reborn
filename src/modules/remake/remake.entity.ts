@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.11.03  이유민      Modified    리본 리메이크 제품 요청 기능 추가
 2024.11.08  이유민      Modified    리본 리메이크 제품 분리
 2024.11.19  이유민      Modified    detail 타입 변경
+2024.12.04  이유민      Modified    deleted_at 추가
 */
 import {
   Entity,
@@ -32,6 +33,9 @@ export class Remake {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 }
 
 @Entity('remake_product')

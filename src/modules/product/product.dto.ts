@@ -11,6 +11,7 @@ Date        Author      Status      Description
 2024.11.20  이유민      Modified    상품 이미지 추가
 2024.11.21  이유민      Modified    market_id 추가
 2024.11.26  이유민      Modified    상품 테이블 분리
+2024.12.04  이유민      Modified    status 추가
 */
 import { IsInt, IsString, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -35,6 +36,10 @@ export class UserProductDTO {
   @IsNotEmpty()
   @IsInt()
   price: number;
+
+  @ApiProperty()
+  @IsString()
+  status: string;
 }
 
 export class MarketProductDTO {
@@ -62,4 +67,8 @@ export class MarketProductDTO {
   @IsNotEmpty()
   @IsInt()
   quantity: number;
+
+  @ApiProperty()
+  @IsString()
+  status: string;
 }

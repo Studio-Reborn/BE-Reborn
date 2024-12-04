@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.11.21  이유민      Modified    에코마켓 추가
 2024.12.04  이유민      Modified    에코마켓 삭제(관리자) 기능 추가
 2024.12.04  이유민      Modified    생성 및 삭제 요청 조회 기능 추가
+2024.12.04  이유민      Modified    swagger 수정
 */
 import {
   Controller,
@@ -79,8 +80,8 @@ export class MarketController {
   @Get('/request/new')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '에코마켓 개별 조회 API',
-    description: '에코마켓을 개별로 조회한다.',
+    summary: '생성 요청된 에코마켓 전체 조회 API',
+    description: '생성 요청된 에코마켓을 전체 조회한다.',
   })
   async findCreateMarket(@Req() req) {
     if (req.user.role !== 'admin')
@@ -93,8 +94,8 @@ export class MarketController {
   @Get('/request/delete')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '에코마켓 개별 조회 API',
-    description: '에코마켓을 개별로 조회한다.',
+    summary: '삭제 요청된 에코마켓 전체 조회 API',
+    description: '삭제 요청된 에코마켓을 전체 조회한다.',
   })
   async findDeleteMarket(@Req() req) {
     if (req.user.role !== 'admin')
@@ -103,12 +104,12 @@ export class MarketController {
     return await this.marketService.findDeleteMarket();
   }
 
-  // 에코마켓 신청 확인
+  // 신청된 에코마켓 생성
   @Patch('/request/check/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '에코마켓 정보 수정 API',
-    description: '에코마켓 정보를 수정한다.',
+    summary: '생성 요청된 에코마켓 생성 API',
+    description: '관리자가 생성 요청된 에코마켓을 확인 후 생성한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -162,12 +163,12 @@ export class MarketController {
     return await this.marketService.deleteRequestMarket(req.user.user_id, id);
   }
 
-  // 에코마켓 삭제
+  // 에코마켓 실제 삭제
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '리메이크 제품 삭제 API',
-    description: '관리자가 리본 리메이크 제품을 삭제한다.',
+    summary: '삭제 요청된 에코마켓 삭제 API',
+    description: '관리자가 삭제 요청된 에코마켓을 확인 후 삭제한다.',
   })
   @ApiHeader({
     name: 'Authorization',

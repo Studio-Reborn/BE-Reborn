@@ -12,6 +12,7 @@ Date        Author      Status      Description
 2024.11.19  이유민      Modified    id로 사용자 정보 조회 추가
 2024.12.04  이유민      Modified    전체 사용자 조회 추가
 2024.12.04  이유민      Modified    사용자 유형 수정 추가
+2024.12.04  이유민      Modified    swagger 수정
 */
 import {
   Controller,
@@ -36,8 +37,8 @@ export class UsersController {
   // 전체 사용자 정보 조회
   @Get()
   @ApiOperation({
-    summary: '본인 정보 조회 API',
-    description: '사용자 본인의 정보를 조회한다.',
+    summary: '전체 사용자 정보 조회 API',
+    description: '모든 사용자의 정보를 조회한다.',
   })
   async findAllUser() {
     return await this.usersService.findAllUser();
@@ -89,8 +90,8 @@ export class UsersController {
   @Patch('/role/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '닉네임 수정 API',
-    description: '사용자의 닉네임을 수정한다.',
+    summary: '사용자 유형 수정 API',
+    description: '사용자의 유형을 수정한다.',
   })
   @ApiHeader({
     name: 'Authorization',

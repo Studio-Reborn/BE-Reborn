@@ -16,6 +16,7 @@ Date        Author      Status      Description
 2024.11.22  이유민      Modified    임시 코드 제거
 2024.12.04  이유민      Modified    요청 조회 기능 추가
 2024.12.04  이유민      Modified    요청 삭제 기능 추가
+2024.12.04  이유민      Modified    swagger 수정
 */
 import {
   Body,
@@ -69,12 +70,12 @@ export class RemakeController {
     });
   }
 
-  // 리본 리메이크 제품 추천받기
+  // 리본 리메이크 요청 전부 전체 조회
   @Get('/request')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '리메이크 제품 요청 API',
-    description: '관리자에게 리본 리메이크 제품을 요청한다.',
+    summary: '리메이크 요청 제품 전체 조회 API',
+    description: '요청된 리본 리메이크 제품을 전체 조회한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -88,12 +89,12 @@ export class RemakeController {
     return this.remakeService.findRequestProductAll();
   }
 
-  // 리본 리메이크 제품 삭제
+  // 리본 리메이크 요청 삭제
   @Delete('/request/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '리메이크 제품 삭제 API',
-    description: '관리자가 리본 리메이크 제품을 삭제한다.',
+    summary: '리메이크 요청 제품 삭제 API',
+    description: '요청된 리본 리메이크 제품을 삭제한다.',
   })
   @ApiHeader({
     name: 'Authorization',

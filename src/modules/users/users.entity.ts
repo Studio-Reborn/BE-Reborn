@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    회원 기능 추가
+2024.12.04  이유민      Modified    role 컬럼 추가
 */
 import {
   Entity,
@@ -36,6 +37,13 @@ export class Users {
 
   @Column()
   nickname: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['user', 'admin'],
+    default: 'user',
+  })
+  role: string;
 
   @CreateDateColumn()
   created_at: Date;

@@ -67,6 +67,7 @@ export class UserProductRepository {
       .where('product.user_id = :user_id AND product.deleted_at IS NULL', {
         user_id,
       })
+      .orderBy('product.created_at', 'DESC')
       .getRawMany();
   }
 

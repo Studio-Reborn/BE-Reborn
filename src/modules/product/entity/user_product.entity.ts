@@ -41,7 +41,7 @@ export class UserProduct {
 
   @Column({
     type: 'enum',
-    enum: ['판매중', '예약중', '판매완료', '숨김'],
+    enum: ['판매중', '거래중', '판매완료', '숨김'],
     nullable: false,
     default: '판매중',
   })

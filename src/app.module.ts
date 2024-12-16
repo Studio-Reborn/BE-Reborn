@@ -14,6 +14,7 @@ import { ProfileModule } from 'src/modules/profile_image/profile_image.module';
 import { ProductImageModule } from 'src/modules/product_image/product_image.module';
 import { MarketModule } from 'src/modules/market/market.module';
 import { BillingModule } from 'src/modules/billing/billing.module';
+import { ChatModule } from 'src/modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { BillingModule } from 'src/modules/billing/billing.module';
     ProductImageModule,
     MarketModule,
     BillingModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

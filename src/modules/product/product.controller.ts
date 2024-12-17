@@ -17,6 +17,7 @@ Date        Author      Status      Description
 2024.11.21  이유민      Modified    제품 상세 조회 경로 변경
 2024.11.26  이유민      Modified    상품 테이블 분리
 2024.12.04  이유민      Modified    본인 정보 조회 추가
+2024.12.17  이유민      Modified    product_id 타입 수정
 */
 import {
   Controller,
@@ -125,7 +126,7 @@ export class ProductController {
     summary: '중고거래 제품 개별 조회 API',
     description: '중고거래 제품을 개별 조회한다.',
   })
-  async findUserProductById(@Param('id', ParseIntPipe) id: number) {
+  async findUserProductById(@Param('id') id: string) {
     return await this.productService.findUserProductOneById(id);
   }
 
@@ -141,7 +142,7 @@ export class ProductController {
     required: true,
   })
   async updateUserProduct(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() userProductDTO: UserProductDTO,
   ) {
     return await this.productService.updateUserProductById(id, userProductDTO);
@@ -158,7 +159,7 @@ export class ProductController {
     description: 'Bearer 토큰 형식의 JWT',
     required: true,
   })
-  async deleteUserProduct(@Param('id', ParseIntPipe) id: number) {
+  async deleteUserProduct(@Param('id') id: string) {
     return await this.productService.deleteUserProductById(id);
   }
 
@@ -219,7 +220,7 @@ export class ProductController {
     summary: '에코마켓 제품 개별 조회 API',
     description: '에코마켓의 제품을 개별 조회한다.',
   })
-  async findMarketProductById(@Param('id', ParseIntPipe) id: number) {
+  async findMarketProductById(@Param('id') id: string) {
     return await this.productService.findMarketProductOneById(id);
   }
 
@@ -235,7 +236,7 @@ export class ProductController {
     required: true,
   })
   async updateMarketProduct(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() marketproductDTO: MarketProductDTO,
   ) {
     return await this.productService.updateMarketProductById(
@@ -255,7 +256,7 @@ export class ProductController {
     description: 'Bearer 토큰 형식의 JWT',
     required: true,
   })
-  async deleteMarketProduct(@Param('id', ParseIntPipe) id: number) {
+  async deleteMarketProduct(@Param('id') id: string) {
     return await this.productService.deleteMarketProductById(id);
   }
 }

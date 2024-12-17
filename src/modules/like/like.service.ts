@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.12.16  이유민      Created     
 2024.12.16  이유민      Modified    상품 좋아요 추가
+2024.12.17  이유민      Modified    product_id 타입 수정
 */
 import { Injectable } from '@nestjs/common';
 import { ProductLike } from 'src/modules/like/entity/product_like.entity';
@@ -22,14 +23,14 @@ export class LikeService {
   }
 
   // 상품의 총 좋아요 조회
-  async findProductLikeByProductId(product_id: number): Promise<ProductLike[]> {
+  async findProductLikeByProductId(product_id: string): Promise<ProductLike[]> {
     return this.productLikeRepository.findProductLikeByProductId(product_id);
   }
 
   // 사용자가 해당 상품 좋아요 눌렀는지 조회
   async findProductLikeByProductIdAndUserId(
     user_id: number,
-    product_id: number,
+    product_id: string,
   ): Promise<ProductLike> {
     return this.productLikeRepository.findProductLikeByProductIdAndUserId(
       user_id,

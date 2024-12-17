@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.11.08  이유민      Modified    상품 RUD 추가
 2024.11.21  이유민      Modified    사용자별 판매 제품 조회 추가
 2024.11.26  이유민      Modified    상품 테이블 분리
+2024.12.17  이유민      Modified    product_id 타입 수정
 */
 import { Injectable } from '@nestjs/common';
 import { UserProduct } from 'src/modules/product/entity/user_product.entity';
@@ -38,7 +39,7 @@ export class ProductService {
   }
 
   // id로 중고거래 제품 개별 조회
-  async findUserProductOneById(id: number): Promise<UserProduct> {
+  async findUserProductOneById(id: string): Promise<UserProduct> {
     return this.userProductRepository.findProductById(id);
   }
 
@@ -49,14 +50,14 @@ export class ProductService {
 
   // id로 중고거래 제품 수정
   async updateUserProductById(
-    id: number,
+    id: string,
     updateData: Partial<UserProduct>,
   ): Promise<object> {
     return this.userProductRepository.updateProductById(id, updateData);
   }
 
   // id로 중고거래 제품 삭제
-  async deleteUserProductById(id: number): Promise<object> {
+  async deleteUserProductById(id: string): Promise<object> {
     return this.userProductRepository.deleteProductById(id);
   }
 
@@ -76,20 +77,20 @@ export class ProductService {
   }
 
   // id로 에코마켓 제품 개별 조회
-  async findMarketProductOneById(id: number): Promise<MarketProduct> {
+  async findMarketProductOneById(id: string): Promise<MarketProduct> {
     return this.marketProductRepository.findProductById(id);
   }
 
   // id로 에코마켓 제품 수정
   async updateMarketProductById(
-    id: number,
+    id: string,
     updateData: Partial<MarketProduct>,
   ): Promise<object> {
     return this.marketProductRepository.updateProductById(id, updateData);
   }
 
   // id로 에코마켓 제품 삭제
-  async deleteMarketProductById(id: number): Promise<object> {
+  async deleteMarketProductById(id: string): Promise<object> {
     return this.marketProductRepository.deleteProductById(id);
   }
 }

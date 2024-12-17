@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.12.05  이유민      Created     
 2024.12.05  이유민      Modified    채팅 추가
+2024.12.17  이유민      Modified    product_id 타입 수정
 */
 import {
   Entity,
@@ -22,7 +23,7 @@ export class Chat {
   id: string;
 
   @Column({ nullable: false })
-  product_id: number;
+  product_id: string;
 
   @Column({ nullable: false })
   seller_id: number;

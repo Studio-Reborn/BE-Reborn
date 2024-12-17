@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.11.26  이유민      Modified    상품 상태 추가
 2024.11.26  이유민      Modified    상품 수량 추가
 2024.11.27  이유민      Modified    status 수정
+2024.12.17  이유민      Modified    product_id 타입 수정
 */
 import {
   Entity,
@@ -22,8 +23,8 @@ import {
 
 @Entity('market_product')
 export class MarketProduct {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ nullable: false })
   market_id: number;

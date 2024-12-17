@@ -7,20 +7,17 @@ History
 Date        Author      Status      Description
 2024.12.16  이유민      Created     
 2024.12.16  이유민      Modified    상품 좋아요 추가
+2024.12.17  이유민      Modified    product_id 타입 수정
 */
 import {
   Controller,
   Post,
   Get,
-  Patch,
-  Delete,
   Body,
   BadRequestException,
   UnauthorizedException,
   Param,
-  Query,
   Req,
-  ParseIntPipe,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/modules/auth/jwt/jwt-auth.guard';
@@ -71,10 +68,7 @@ export class LikeController {
     description: 'Bearer 토큰 형식의 JWT',
     required: true,
   })
-  async findProductLikeByProductId(
-    @Req() req,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async findProductLikeByProductId(@Req() req, @Param('id') id: string) {
     if (!req.user.user_id)
       throw new UnauthorizedException('로그인 후 이용 가능합니다.');
 
@@ -97,7 +91,7 @@ export class LikeController {
   })
   async findProductLikeByProductIdAndUserId(
     @Req() req,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
   ) {
     if (!req.user.user_id)
       throw new UnauthorizedException('로그인 후 이용 가능합니다.');

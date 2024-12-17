@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.11.26  이유민      Modified    상품 테이블 분리
 2024.11.28  이유민      Modified    마켓 제품 개별 조회 수정
 2024.12.04  이유민      Modified    코드 리팩토링
+2024.12.17  이유민      Modified    product_id 타입 수정
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -41,7 +42,7 @@ export class MarketProductRepository {
   }
 
   // id로 마켓 제품 개별 조회
-  async findProductById(id: number): Promise<MarketProduct> {
+  async findProductById(id: string): Promise<MarketProduct> {
     const product = await this.marketProductRepository
       .createQueryBuilder('product')
       .leftJoin('market', 'market', 'product.market_id = market.id')
@@ -49,6 +50,11 @@ export class MarketProductRepository {
         'product_image',
         'product_image',
         'product.product_image_id = product_image.id',
+      )
+      .leftJoin(
+        'profile_image',
+        'profile',
+        'market.profile_image_id = profile.id',
       )
       .select([
         'product.name AS name',
@@ -58,8 +64,11 @@ export class MarketProductRepository {
         'product.quantity AS quantity',
         'product.status AS status',
         'product.product_image_id AS product_image_id',
+        'product_image.url AS product_image_url',
         'market.market_name AS market_name',
-        'product_image.url',
+        'market.id AS market_id',
+        'market.user_id AS market_user_id',
+        'profile.url AS market_profile_url',
       ])
       .where('product.id = :id AND product.deleted_at IS NULL', { id })
       .getRawOne();
@@ -71,7 +80,7 @@ export class MarketProductRepository {
 
   // id로 마켓 제품 수정
   async updateProductById(
-    id: number,
+    id: string,
     updateData: Partial<MarketProduct>,
   ): Promise<object> {
     const product = await this.findProductById(id);
@@ -83,7 +92,7 @@ export class MarketProductRepository {
   }
 
   // id로 마켓 제품 삭제
-  async deleteProductById(id: number): Promise<object> {
+  async deleteProductById(id: string): Promise<object> {
     const product = await this.findProductById(id);
 
     product.deleted_at = new Date();

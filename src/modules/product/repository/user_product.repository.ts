@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.26  이유민      Created     
 2024.11.26  이유민      Modified    상품 테이블 분리
 2024.12.04  이유민      Modified    코드 리팩토링
+2024.12.17  이유민      Modified    product_id 타입 수정
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -39,7 +40,7 @@ export class UserProductRepository {
   }
 
   // id로 중고거래 제품 개별 조회
-  async findProductById(id: number): Promise<UserProduct> {
+  async findProductById(id: string): Promise<UserProduct> {
     const product = await this.userProductRepository
       .createQueryBuilder('product')
       .where('product.id = :id AND product.deleted_at IS NULL', { id })
@@ -73,7 +74,7 @@ export class UserProductRepository {
 
   // id로 중고거래 제품 수정
   async updateProductById(
-    id: number,
+    id: string,
     updateData: Partial<UserProduct>,
   ): Promise<object> {
     const product = await this.findProductById(id);
@@ -85,7 +86,7 @@ export class UserProductRepository {
   }
 
   // id로 중고거래 제품 삭제
-  async deleteProductById(id: number): Promise<object> {
+  async deleteProductById(id: string): Promise<object> {
     const product = await this.findProductById(id);
 
     product.deleted_at = new Date();

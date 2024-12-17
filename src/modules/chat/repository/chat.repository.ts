@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.12.06  이유민      Created     
 2024.12.06  이유민      Modified    채팅 추가
 2024.12.09  이유민      Modified    내 채팅 전체 조회 추가
+2024.12.17  이유민      Modified    product_id 타입 수정
 */
 import {
   Injectable,
@@ -146,7 +147,7 @@ export class ChatRepository {
 
   // seller_id & buyer_id로 채팅방 검색
   async findChatByChatInfo(
-    product_id: number,
+    product_id: string,
     seller_id: number,
     buyer_id: number,
   ): Promise<Chat> {

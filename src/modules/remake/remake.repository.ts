@@ -12,6 +12,7 @@ Date        Author      Status      Description
 2024.11.28  이유민      Modified    리본 리메이크 제품 개별 조회 수정
 2024.12.04  이유민      Modified    요청 조회 기능 추가
 2024.12.04  이유민      Modified    요청 삭제 기능 추가
+2024.12.17  이유민      Modified    코드 리팩토링
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -75,8 +76,25 @@ export class RemakeRepository {
   async findRemakeProductAll(): Promise<RemakeProduct[]> {
     return await this.remakeProductRepository
       .createQueryBuilder('rproduct')
+      .leftJoin(
+        'product_image',
+        'image',
+        'rproduct.product_image_id = image.id',
+      )
+      .select([
+        'rproduct.created_at AS created_at',
+        'rproduct.deleted_at AS deleted_at',
+        'rproduct.updated_at AS updated_at',
+        'rproduct.detail AS detail',
+        'rproduct.id AS id',
+        'rproduct.matter AS matter',
+        'rproduct.name AS name',
+        'rproduct.price AS price',
+        'rproduct.product_image_id AS product_image_id',
+        'image.url AS product_image_url',
+      ])
       .where('rproduct.deleted_at IS NULL')
-      .getMany();
+      .getRawMany();
   }
 
   // 리메이크 제품 개별 조회

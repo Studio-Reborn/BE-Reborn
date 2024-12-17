@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.11.21  이유민      Modified    에코마켓 추가
 2024.12.04  이유민      Modified    에코마켓 삭제(관리자) 기능 추가
 2024.12.04  이유민      Modified    생성 및 삭제 요청 조회 기능 추가
+2024.12.17  이유민      Modified    코드 리팩토링
 */
 
 import {
@@ -37,10 +38,34 @@ export class MarketRepository {
   async findMarketAll(): Promise<Market[]> {
     return await this.marketRepository
       .createQueryBuilder('market')
+      .leftJoin(
+        'profile_image',
+        'profile',
+        'market.profile_image_id = profile.id',
+      )
+      .select([
+        'market.id AS id',
+        'market.created_at AS created_at',
+        'market.updated_at AS updated_at',
+        'market.deleted_at AS deleted_at',
+        'market.is_deletion_requested AS is_deletion_requested',
+        'market.is_verified AS is_verified',
+        'market.market_detail AS market_detail',
+        'market.market_name AS market_name',
+        'market.profile_image_id AS profile_image_id',
+        'profile.url AS profile_image_url',
+      ])
+      .addSelect((subQuery) => {
+        return subQuery
+          .select('COUNT(*)')
+          .from('market_like', 'like')
+          .where('market.id = like.market_id AND like.deleted_at IS NULL')
+          .groupBy('like.market_id');
+      }, 'market_likes')
       .where(
         'market.is_verified = true AND market.deleted_at IS NULL AND market.is_deletion_requested = false',
       )
-      .getMany();
+      .getRawMany();
   }
 
   // id로 에코마켓 개별 조회

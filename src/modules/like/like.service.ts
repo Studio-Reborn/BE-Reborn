@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.12.16  이유민      Modified    상품 좋아요 추가
 2024.12.17  이유민      Modified    product_id 타입 수정
 2024.12.17  이유민      Modified    마켓 좋아요 추가
+2024.12.18  이유민      Modified    마이페이지 관련 기능 추가
 */
 import { Injectable } from '@nestjs/common';
 import { ProductLike } from 'src/modules/like/entity/product_like.entity';
@@ -44,6 +45,11 @@ export class LikeService {
     );
   }
 
+  // 사용자별 좋아요 누른 상품
+  async findProductLikeByUserId(user_id: number): Promise<object> {
+    return this.productLikeRepository.findProductLikeByUserId(user_id);
+  }
+
   // 마켓 좋아요 생성
   async createMarketLike(likeData: Partial<MarketLike>): Promise<object> {
     return this.marketLikeRepository.createMarketLike(likeData);
@@ -63,5 +69,10 @@ export class LikeService {
       user_id,
       market_id,
     );
+  }
+
+  // 사용자별 좋아요 누른 마켓
+  async findMarketLikeByUserId(user_id: number): Promise<MarketLike[]> {
+    return this.marketLikeRepository.findMarketLikeByUserId(user_id);
   }
 }

@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.12.16  이유민      Modified    상품 좋아요 추가
 2024.12.17  이유민      Modified    product_id 타입 수정
 2024.12.17  이유민      Modified    마켓 좋아요 추가
+2024.12.18  이유민      Modified    마이페이지 관련 기능 추가
 */
 import {
   Controller,
@@ -97,6 +98,25 @@ export class LikeController {
     );
   }
 
+  // 사용자별 좋아요 누른 상품
+  @Get('/product/my')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '사용자의 제품 좋아요 조회 API',
+    description: '사용자가 해당 제품에 좋아요를 눌렀는지 조회한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async findProductLikeByUserId(@Req() req) {
+    if (!req.user.user_id)
+      throw new UnauthorizedException('로그인 후 이용 가능합니다.');
+
+    return await this.likeService.findProductLikeByUserId(req.user.user_id);
+  }
+
   // 마켓 좋아요 생성
   @Post('/market')
   @UseGuards(JwtAuthGuard)
@@ -160,5 +180,24 @@ export class LikeController {
       req.user.user_id,
       id,
     );
+  }
+
+  // 사용자별 좋아요 누른 마켓
+  @Get('/market/my')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '사용자의 마켓 좋아요 조회 API',
+    description: '사용자가 해당 마켓에 좋아요를 눌렀는지 조회한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async findMarketLikeByUserId(@Req() req) {
+    if (!req.user.user_id)
+      throw new UnauthorizedException('로그인 후 이용 가능합니다.');
+
+    return await this.likeService.findMarketLikeByUserId(req.user.user_id);
   }
 }

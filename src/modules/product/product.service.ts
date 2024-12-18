@@ -9,42 +9,88 @@ Date        Author      Status      Description
 2024.11.07  이유민      Modified    상품 등록 기능 추가
 2024.11.08  이유민      Modified    상품 RUD 추가
 2024.11.21  이유민      Modified    사용자별 판매 제품 조회 추가
+2024.11.26  이유민      Modified    상품 테이블 분리
+2024.12.17  이유민      Modified    product_id 타입 수정
 */
 import { Injectable } from '@nestjs/common';
-import { ProductRepository } from 'src/modules/product/product.repository';
-import { Product } from 'src/modules/product/product.entity';
+import { UserProduct } from 'src/modules/product/entity/user_product.entity';
+import { MarketProduct } from 'src/modules/product/entity/market_product.entity';
+import { UserProductRepository } from 'src/modules/product/repository/user_product.repository';
+import { MarketProductRepository } from 'src/modules/product/repository/market_product.repository';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly productRepository: ProductRepository) {}
+  constructor(
+    private readonly userProductRepository: UserProductRepository,
+    private readonly marketProductRepository: MarketProductRepository,
+  ) {}
 
-  async createProduct(productData: Partial<Product>): Promise<Product> {
-    return this.productRepository.createProduct(productData);
+  // 중고거래 관련
+  // 중고거래 제품 생성
+  async createUserProduct(
+    productData: Partial<UserProduct>,
+  ): Promise<UserProduct> {
+    return this.userProductRepository.createProduct(productData);
   }
 
-  async findProductAll(theme: string, sort: string): Promise<Product[]> {
-    return this.productRepository.findProductAll(theme, sort);
+  // 중고거래 제품 전체 조회
+  async findUserProductAll(sort: string): Promise<UserProduct[]> {
+    return this.userProductRepository.findProductAll(sort);
   }
 
-  async findProductOneById(id: number): Promise<Product> {
-    return this.productRepository.findProductById(id);
+  // id로 중고거래 제품 개별 조회
+  async findUserProductOneById(id: string): Promise<UserProduct> {
+    return this.userProductRepository.findProductById(id);
   }
 
-  async findProductByUserId(
-    user_id: number,
-    theme: string,
-  ): Promise<Product[]> {
-    return this.productRepository.findProductByUserId(user_id, theme);
+  // user_id로 중고거래 제품 조회
+  async findUserProductByUserId(user_id: number): Promise<UserProduct[]> {
+    return this.userProductRepository.findProductByUserId(user_id);
   }
 
-  async updateProductById(
-    id: number,
-    updateData: Partial<Product>,
+  // id로 중고거래 제품 수정
+  async updateUserProductById(
+    id: string,
+    updateData: Partial<UserProduct>,
   ): Promise<object> {
-    return this.productRepository.updateProductById(id, updateData);
+    return this.userProductRepository.updateProductById(id, updateData);
   }
 
-  async deleteProductById(id: number): Promise<object> {
-    return this.productRepository.deleteProductById(id);
+  // id로 중고거래 제품 삭제
+  async deleteUserProductById(id: string): Promise<object> {
+    return this.userProductRepository.deleteProductById(id);
+  }
+
+  // 에코마켓 관련
+  // 에코마켓 제품 생성
+  async createMarketProduct(
+    productData: Partial<MarketProduct>,
+  ): Promise<MarketProduct> {
+    return this.marketProductRepository.createProduct(productData);
+  }
+
+  // market_id로 에코마켓 제품 조회
+  async findMarketProductByMarektId(
+    market_id: number,
+  ): Promise<MarketProduct[]> {
+    return this.marketProductRepository.findProductByMarketId(market_id);
+  }
+
+  // id로 에코마켓 제품 개별 조회
+  async findMarketProductOneById(id: string): Promise<MarketProduct> {
+    return this.marketProductRepository.findProductById(id);
+  }
+
+  // id로 에코마켓 제품 수정
+  async updateMarketProductById(
+    id: string,
+    updateData: Partial<MarketProduct>,
+  ): Promise<object> {
+    return this.marketProductRepository.updateProductById(id, updateData);
+  }
+
+  // id로 에코마켓 제품 삭제
+  async deleteMarketProductById(id: string): Promise<object> {
+    return this.marketProductRepository.deleteProductById(id);
   }
 }

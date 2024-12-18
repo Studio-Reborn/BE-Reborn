@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.12.17  이유민      Created     
 2024.12.17  이유민      Modified    마켓 좋아요 추가
+2024.12.18  이유민      Modified    마이페이지 관련 기능 추가
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -64,5 +65,28 @@ export class MarketLikeRepository {
         market_id,
       })
       .getOne();
+  }
+
+  // 사용자별 좋아요 누른 마켓
+  async findMarketLikeByUserId(user_id: number): Promise<MarketLike[]> {
+    return await this.marketLikeRepository
+      .createQueryBuilder('like')
+      .leftJoin('market', 'market', 'like.market_id = market.id')
+      .leftJoin(
+        'profile_image',
+        'profile',
+        'market.profile_image_id = profile.id',
+      )
+      .select([
+        'market.id AS market_id',
+        'market.market_name AS market_name',
+        'profile.url AS market_profile_url',
+      ])
+      .where(
+        'like.user_id = :user_id AND like.deleted_at IS NULL AND like.market_id = market.id',
+        { user_id },
+      )
+      .orderBy('like.created_at', 'DESC')
+      .getRawMany();
   }
 }

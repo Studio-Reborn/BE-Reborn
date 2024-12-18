@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.11.12  이유민      Created     
 2024.11.12  이유민      Modified    jwt 추가
+2024.12.04  이유민      Modified    role 추가
 */
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -23,6 +24,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    return { user_id: payload.user_id, email: payload.email };
+    return {
+      user_id: payload.user_id,
+      email: payload.email,
+      role: payload.role,
+    };
   }
 }

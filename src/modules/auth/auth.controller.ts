@@ -11,6 +11,7 @@ Date        Author      Status      Description
 2024.11.13  이유민      Modified    토큰 검증 추가
 2024.11.13  이유민      Modified    비밀번호 변경 추가
 2024.11.18  이유민      Modified    swagger 추가
+2024.12.04  이유민      Modified    role 추가
 */
 import {
   Controller,
@@ -103,6 +104,7 @@ export class AuthController {
         user.email,
         authData.id,
         res,
+        user.role,
       );
 
       return res.status(200).send(jwt);

@@ -7,6 +7,8 @@ History
 Date        Author      Status      Description
 2024.11.21  이유민      Created     
 2024.11.21  이유민      Modified    에코마켓 추가
+2024.12.04  이유민      Modified    에코마켓 삭제(관리자) 기능 추가
+2024.12.04  이유민      Modified    생성 및 삭제 요청 조회 기능 추가
 */
 import { Injectable } from '@nestjs/common';
 import { Market } from 'src/modules/market/market.entity';
@@ -31,6 +33,21 @@ export class MarketService {
     return this.marketRepository.findMarketById(id);
   }
 
+  // 새로 신청한 에코마켓 조회
+  async findCreateMarket(): Promise<Market[]> {
+    return this.marketRepository.findCreateMarket();
+  }
+
+  // 새로 신청한 에코마켓 조회
+  async findDeleteMarket(): Promise<Market[]> {
+    return this.marketRepository.findDeleteMarket();
+  }
+
+  // 에코마켓 신청 확인
+  async checkCreateMarket(id: number): Promise<object> {
+    return this.marketRepository.checkCreateMarket(id);
+  }
+
   // 에코마켓 정보 수정
   async updateMarketInfo(
     user_id: number,
@@ -43,5 +60,10 @@ export class MarketService {
   // 에코마켓 삭제 요청
   async deleteRequestMarket(user_id: number, id: number): Promise<object> {
     return this.marketRepository.deleteRequestMarket(user_id, id);
+  }
+
+  // 에코마켓 삭제
+  async deleteMarketById(id: number): Promise<object> {
+    return this.marketRepository.deleteMarketById(id);
   }
 }

@@ -14,6 +14,10 @@ Date        Author      Status      Description
 2024.11.18  이유민      Modified    리본 리메이크 제품 CRUD 추가
 2024.11.18  이유민      Modified    swagger 추가
 2024.11.22  이유민      Modified    임시 코드 제거
+2024.12.04  이유민      Modified    요청 조회 기능 추가
+2024.12.04  이유민      Modified    요청 삭제 기능 추가
+2024.12.04  이유민      Modified    swagger 수정
+2024.12.18  이유민      Modified    id 타입 수정
 */
 import {
   Body,
@@ -67,6 +71,44 @@ export class RemakeController {
     });
   }
 
+  // 리본 리메이크 요청 전부 전체 조회
+  @Get('/request')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '리메이크 요청 제품 전체 조회 API',
+    description: '요청된 리본 리메이크 제품을 전체 조회한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async findRequestProductAll(@Req() req) {
+    if (req.user.role !== 'admin')
+      throw new UnauthorizedException('관리자만 접근 가능합니다.');
+
+    return this.remakeService.findRequestProductAll();
+  }
+
+  // 리본 리메이크 요청 삭제
+  @Delete('/request/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '리메이크 요청 제품 삭제 API',
+    description: '요청된 리본 리메이크 제품을 삭제한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async deleteRequestById(@Req() req, @Param('id', ParseIntPipe) id: number) {
+    if (req.user.role !== 'admin')
+      throw new UnauthorizedException('관리자만 접근 가능합니다.');
+
+    return this.remakeService.deleteRequestById(id);
+  }
+
   // 리본 리메이크 제품 추천받기
   @Get()
   @ApiOperation({
@@ -115,7 +157,7 @@ export class RemakeController {
     summary: '리메이크 제품 개별 조회 API',
     description: '리본 리메이크 제품을 개별 조회한다.',
   })
-  async findRemakeProductById(@Param('id', ParseIntPipe) id: number) {
+  async findRemakeProductById(@Param('id') id: string) {
     return this.remakeService.findRemakeProductById(id);
   }
 
@@ -133,7 +175,7 @@ export class RemakeController {
   })
   async updateRemakeProductById(
     @Req() req,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() remakeProductDTO: RemakeProductDTO,
   ) {
     return this.remakeService.updateRemakeProductById(id, remakeProductDTO);
@@ -151,10 +193,7 @@ export class RemakeController {
     description: 'Bearer 토큰 형식의 JWT',
     required: true,
   })
-  async deleteRemakeProductById(
-    @Req() req,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async deleteRemakeProductById(@Req() req, @Param('id') id: string) {
     return this.remakeService.deleteRemakeProductById(id);
   }
 }

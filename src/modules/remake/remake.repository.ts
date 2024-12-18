@@ -13,6 +13,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    요청 조회 기능 추가
 2024.12.04  이유민      Modified    요청 삭제 기능 추가
 2024.12.17  이유민      Modified    코드 리팩토링
+2024.12.18  이유민      Modified    id 타입 수정
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -98,7 +99,7 @@ export class RemakeRepository {
   }
 
   // 리메이크 제품 개별 조회
-  async findRemakeProductById(id: number): Promise<RemakeProduct> {
+  async findRemakeProductById(id: string): Promise<RemakeProduct> {
     return await this.remakeProductRepository
       .createQueryBuilder('rproduct')
       .leftJoin(
@@ -122,7 +123,7 @@ export class RemakeRepository {
 
   // 리메이크 제품 수정
   async updateRemakeProductById(
-    id: number,
+    id: string,
     updateData: Partial<RemakeProduct>,
   ): Promise<object> {
     const product = await this.findRemakeProductById(id);
@@ -134,7 +135,7 @@ export class RemakeRepository {
   }
 
   // 리메이크 제품 삭제
-  async deleteRemakeProductById(id: number): Promise<object> {
+  async deleteRemakeProductById(id: string): Promise<object> {
     const product = await this.findRemakeProductById(id);
 
     product.deleted_at = new Date();

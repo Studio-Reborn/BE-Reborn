@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.12.19  이유민      Created     
 2024.12.19  이유민      Modified    리뷰 추가
+2024.12.28  이유민      Modified    오류 수정
 */
 import {
   Injectable,
@@ -101,14 +102,14 @@ export class ReviewRepository {
   async updateReviewById(
     id: number,
     user_id: number,
-    updateData: Partial<Review>,
+    content: string,
   ): Promise<object> {
     const review = await this.findReviewById(id);
 
     if (review.user_id !== user_id)
       throw new UnauthorizedException('접근할 수 없습니다.');
 
-    Object.assign(review, updateData);
+    Object.assign(review, content);
     await this.reviewRepository.save(review);
 
     return { message: '리뷰가 성공적으로 변경되었습니다.' };

@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.12.19  이유민      Created     
 2024.12.19  이유민      Modified    리뷰 추가
+2024.12.28  이유민      Modified    리뷰 상세 조회 추가
 */
 import {
   Body,
@@ -45,7 +46,7 @@ export class ReviewController {
     required: true,
   })
   async createReview(@Req() req, @Body() reviewDTO: ReviewDTO) {
-    const { product_id, content } = reviewDTO;
+    const { product_id, content, items_id } = reviewDTO;
 
     if (!req.user.user_id)
       throw new UnauthorizedException('로그인 후 이용 가능합니다.');
@@ -57,6 +58,7 @@ export class ReviewController {
       user_id: req.user.user_id,
       product_id,
       content,
+      items_id,
     });
   }
 
@@ -89,6 +91,16 @@ export class ReviewController {
     return this.reviewService.findReviewByUserId(req.user.user_id);
   }
 
+  // 리뷰 상세 조회
+  @Get('/info/:id')
+  @ApiOperation({
+    summary: '리뷰 상세 조회 API',
+    description: '상세 리뷰를 조회한다.',
+  })
+  async findReviewById(@Param('id', ParseIntPipe) id: number) {
+    return this.reviewService.findReviewById(id);
+  }
+
   // 리뷰 수정
   @Patch('/:id')
   @UseGuards(JwtAuthGuard)
@@ -104,12 +116,12 @@ export class ReviewController {
   async updateReviewById(
     @Req() req,
     @Param('id', ParseIntPipe) id: number,
-    @Body() reviewDTO: ReviewDTO,
+    @Body() content: string,
   ) {
     if (!req.user.user_id)
       throw new UnauthorizedException('로그인 후 이용 가능합니다.');
 
-    return this.reviewService.updateReviewById(id, req.user.user_id, reviewDTO);
+    return this.reviewService.updateReviewById(id, req.user.user_id, content);
   }
 
   // 리뷰 삭제

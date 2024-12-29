@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.12.19  이유민      Created     
 2024.12.19  이유민      Modified    리뷰 추가
+2024.12.28  이유민      Modified    리뷰 상세 조회 추가
 */
 import { Injectable } from '@nestjs/common';
 import { Review } from 'src/modules/review/review.entity';
@@ -31,13 +32,18 @@ export class ReviewService {
     return this.reviewRepository.findReviewByUserId(user_id);
   }
 
+  // 리뷰 상세 조회
+  async findReviewById(id: number): Promise<Review> {
+    return this.reviewRepository.findReviewById(id);
+  }
+
   // 리뷰 수정
   async updateReviewById(
     id: number,
     user_id: number,
-    updateData: Partial<Review>,
+    content: string,
   ): Promise<object> {
-    return this.reviewRepository.updateReviewById(id, user_id, updateData);
+    return this.reviewRepository.updateReviewById(id, user_id, content);
   }
 
   // 리뷰 삭제

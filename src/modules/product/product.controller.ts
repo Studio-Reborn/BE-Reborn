@@ -18,6 +18,8 @@ Date        Author      Status      Description
 2024.11.26  이유민      Modified    상품 테이블 분리
 2024.12.04  이유민      Modified    본인 정보 조회 추가
 2024.12.17  이유민      Modified    product_id 타입 수정
+2024.12.30  이유민      Modified    중고거래 판매 완료 추가
+2024.12.30  이유민      Modified    중고거래 구매내역 조회 추가
 */
 import {
   Controller,
@@ -130,8 +132,50 @@ export class ProductController {
     return await this.productService.findUserProductOneById(id);
   }
 
+  // 중고물품 구매 내역 조회
+  @Get('/pre-loved/buy')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '중고거래 제품 구매내역 조회 API',
+    description: '중고거래 제품 구매내역을 조회한다.',
+  })
+  async findProductByBuyerUserId(@Req() req) {
+    if (!req.user.user_id)
+      throw new UnauthorizedException('로그인 후 이용 가능합니다.');
+
+    return await this.productService.findProductByBuyerUserId(req.user.user_id);
+  }
+
+  // 중고거래 거래 완료
+  @Patch('/sold-out/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '중고거래 제품 거래 완료 API',
+    description: '중고거래 제품 거래를 완료한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async soldOutUserProduct(
+    @Req() req,
+    @Param('id') id: string,
+    @Body('buyer_user_id') buyer_user_id: number,
+  ) {
+    if (!req.user.user_id)
+      throw new UnauthorizedException('로그인 후 이용 가능합니다.');
+
+    return await this.productService.soldOutUserProduct(
+      req.user.user_id,
+      id,
+      buyer_user_id,
+    );
+  }
+
   // 중고거래 제품 수정
   @Patch('/pre-loved/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '중고거래 제품 수정 API',
     description: '중고거래 제품을 수정한다.',
@@ -150,6 +194,7 @@ export class ProductController {
 
   // 중고거래 제품 삭제
   @Delete('/pre-loved/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '중고거래 제품 삭제 API',
     description: '중고거래 제품을 삭제한다.',

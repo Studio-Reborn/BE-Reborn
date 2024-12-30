@@ -11,6 +11,8 @@ Date        Author      Status      Description
 2024.11.21  이유민      Modified    사용자별 판매 제품 조회 추가
 2024.11.26  이유민      Modified    상품 테이블 분리
 2024.12.17  이유민      Modified    product_id 타입 수정
+2024.12.30  이유민      Modified    중고거래 판매 완료 추가
+2024.12.30  이유민      Modified    중고거래 구매내역 조회 추가
 */
 import { Injectable } from '@nestjs/common';
 import { UserProduct } from 'src/modules/product/entity/user_product.entity';
@@ -46,6 +48,24 @@ export class ProductService {
   // user_id로 중고거래 제품 조회
   async findUserProductByUserId(user_id: number): Promise<UserProduct[]> {
     return this.userProductRepository.findProductByUserId(user_id);
+  }
+
+  // 중고물품 구매 내역 조회
+  async findProductByBuyerUserId(user_id: number): Promise<UserProduct[]> {
+    return this.userProductRepository.findProductByBuyerUserId(user_id);
+  }
+
+  // 중고거래 거래 완료
+  async soldOutUserProduct(
+    user_id: number,
+    id: string,
+    buyer_user_id: number,
+  ): Promise<object> {
+    return this.userProductRepository.soldOutUserProduct(
+      user_id,
+      id,
+      buyer_user_id,
+    );
   }
 
   // id로 중고거래 제품 수정

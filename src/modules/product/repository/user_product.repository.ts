@@ -11,6 +11,8 @@ Date        Author      Status      Description
 2024.12.17  이유민      Modified    product_id 타입 수정
 2024.12.30  이유민      Modified    중고거래 판매 완료 추가
 2024.12.30  이유민      Modified    중고거래 구매내역 조회 추가
+2024.12.30  이유민      Modified    중고거래 횟수 조회 추가
+2025.01.02  이유민      Modified    검색 및 정렬 추가
 */
 import {
   Injectable,
@@ -35,11 +37,24 @@ export class UserProductRepository {
   }
 
   // 중고거래 제품 전체 조회
-  async findProductAll(sort: string): Promise<UserProduct[]> {
+  async findProductAll(sort: string, search?: string): Promise<UserProduct[]> {
     const product = await this.userProductRepository
       .createQueryBuilder('product')
       .where('product.deleted_at IS NULL')
-      .orderBy(`product.${sort}`)
+      .andWhere(
+        search
+          ? 'product.name LIKE :search OR product.detail LIKE :search'
+          : '1=1',
+        { search: `%${search}%` },
+      )
+      .orderBy(
+        sort === 'name' // name일 경우
+          ? 'product.name' // 이름순
+          : sort === 'latest' // latest일 경우
+            ? 'product.created_at' // 최신순
+            : 'product.created_at', // 기본은 최신순
+        sort === 'name' ? 'ASC' : 'DESC',
+      )
       .getMany();
 
     return product;
@@ -142,5 +157,14 @@ export class UserProductRepository {
     await this.userProductRepository.save(product);
 
     return { message: '성공적으로 삭제되었습니다.' };
+  }
+
+  // 중고거래 판매 횟수 조회
+  async readUserProductCnt(): Promise<{ preLovedCnt: string }> {
+    return await this.userProductRepository
+      .createQueryBuilder('preLoved')
+      .select('COUNT(*) AS preLovedCnt')
+      .where('preLoved.buyer_user_id IS NOT NULL')
+      .getRawOne();
   }
 }

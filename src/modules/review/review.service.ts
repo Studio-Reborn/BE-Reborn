@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.12.19  이유민      Created     
 2024.12.19  이유민      Modified    리뷰 추가
 2024.12.28  이유민      Modified    리뷰 상세 조회 추가
+2025.01.07  이유민      Modified    에코마켓별 리뷰 조회 추가
 */
 import { Injectable } from '@nestjs/common';
 import { Review } from 'src/modules/review/review.entity';
@@ -30,6 +31,11 @@ export class ReviewService {
   // 사용자별 작성 리뷰 조회
   async findReviewByUserId(user_id: number): Promise<Review[]> {
     return this.reviewRepository.findReviewByUserId(user_id);
+  }
+
+  // 마켓별 리뷰 조회
+  async findReviewByMarketId(market_id: number): Promise<Review[]> {
+    return this.reviewRepository.findReviewByMarketId(market_id);
   }
 
   // 리뷰 상세 조회

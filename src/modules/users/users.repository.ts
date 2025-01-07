@@ -12,6 +12,8 @@ Date        Author      Status      Description
 2024.11.13  이유민      Modified    닉네임 수정 추가
 2024.12.04  이유민      Modified    전체 사용자 조회 추가
 2024.12.04  이유민      Modified    사용자 유형 수정 추가
+2025.01.05  이유민      Modified    검색 및 정렬 추가
+2025.01.07  이유민      Modified    코드 리팩토링
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -30,7 +32,7 @@ export class UsersRepository {
     return await this.usersRepository.save(users);
   }
 
-  async findAllUser(): Promise<Users[]> {
+  async findAllUser(search?: string, sort?: string): Promise<Users[]> {
     return await this.usersRepository
       .createQueryBuilder('user')
       .leftJoin(
@@ -48,6 +50,22 @@ export class UsersRepository {
         'profile.url AS profile_image',
       ])
       .where('user.deleted_at IS NULL')
+      .andWhere(
+        search
+          ? '(user.nickname LIKE :search OR user.email LIKE :search OR user.phone LIKE :search)'
+          : '1=1',
+        {
+          search: `%${search}%`,
+        },
+      )
+      .orderBy(
+        sort === 'name' // name일 경우
+          ? 'user.nickname' // 이름순
+          : sort === 'latest' // latest일 경우
+            ? 'user.created_at' // 최신순
+            : 'user.created_at', // 기본은 최신순
+        sort === 'name' ? 'ASC' : 'DESC',
+      )
       .getRawMany();
   }
 
@@ -69,12 +87,24 @@ export class UsersRepository {
   }
 
   async findUserById(id: number): Promise<Users> {
-    const user = await this.usersRepository
+    return await this.usersRepository
       .createQueryBuilder('user')
+      .leftJoin(
+        'profile_image',
+        'profile',
+        'user.profile_image_id = profile.id',
+      )
+      .select([
+        'user.id AS id',
+        'user.nickname AS nickname',
+        'user.email AS email',
+        'user.phone AS phone',
+        'user.role AS role',
+        'user.profile_image_id AS profile_image_id',
+        'profile.url AS profile_image_url',
+      ])
       .where('user.id = :id', { id })
-      .getOne();
-
-    return user;
+      .getRawOne();
   }
 
   async updateNickname(id: number, nickname: string): Promise<object> {

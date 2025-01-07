@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.12.19  이유민      Created     
 2024.12.19  이유민      Modified    리뷰 추가
 2024.12.28  이유민      Modified    오류 수정
+2025.01.07  이유민      Modified    에코마켓별 리뷰 조회 추가
 */
 import {
   Injectable,
@@ -57,6 +58,35 @@ export class ReviewRepository {
       .getRawMany();
   }
 
+  // 마켓별 리뷰 조회
+  async findReviewByMarketId(market_id: number): Promise<Review[]> {
+    return await this.reviewRepository
+      .createQueryBuilder('review')
+      .leftJoin('market_product', 'product', 'review.product_id = product.id')
+      .leftJoin('market', 'market', 'product.market_id = market.id')
+      .leftJoin('users', 'users', 'review.user_id = users.id')
+      .leftJoin(
+        'profile_image',
+        'profile',
+        'users.profile_image_id = profile.id',
+      )
+      .select([
+        'product.id AS product_id',
+        'product.name AS product_name',
+        'users.id AS user_id',
+        'users.nickname AS user_nickname',
+        'profile.url AS user_profile_image_url',
+        'review.id AS review_id',
+        'review.content AS review_content',
+        'review.created_at AS review_created_at',
+        'review.updated_at AS review_updated_at',
+      ])
+      .where('review.deleted_at IS NULL')
+      .andWhere('market.id = :market_id', { market_id })
+      .orderBy('review.created_at', 'DESC')
+      .getRawMany();
+  }
+
   // 리뷰 상세 조회
   async findReviewById(id: number): Promise<Review> {
     const review = await this.reviewRepository
@@ -71,9 +101,10 @@ export class ReviewRepository {
 
   // 사용자별 작성 리뷰 조회
   async findReviewByUserId(user_id: number): Promise<Review[]> {
-    return await this.reviewRepository
+    const marketReview = await this.reviewRepository
       .createQueryBuilder('review')
       .innerJoin(
+        // 에코마켓 리뷰
         'market_product',
         'market_product',
         'review.product_id = market_product.id',
@@ -96,6 +127,41 @@ export class ReviewRepository {
       })
       .orderBy('review.created_at', 'DESC')
       .getRawMany();
+
+    const remakeReview = await this.reviewRepository
+      .createQueryBuilder('review')
+      .innerJoin(
+        // 에코마켓 리뷰
+        'remake_product',
+        'remake_product',
+        'review.product_id = remake_product.id',
+      )
+      .leftJoin(
+        'product_image',
+        'product_image',
+        'remake_product.product_image_id = product_image.id',
+      )
+      .addSelect([
+        'remake_product.name AS product_name',
+        'remake_product.price AS product_price',
+        '"Reborn" AS market_name',
+        'product_image.url AS product_image_url',
+      ])
+      .where('review.user_id = :user_id AND review.deleted_at IS NULL', {
+        user_id,
+      })
+      .orderBy('review.created_at', 'DESC')
+      .getRawMany();
+
+    const combinedReviews = [...marketReview, ...remakeReview];
+
+    combinedReviews.sort(
+      (a, b) =>
+        new Date(b.review_created_at).getTime() -
+        new Date(a.review_created_at).getTime(),
+    );
+
+    return combinedReviews;
   }
 
   // 리뷰 수정

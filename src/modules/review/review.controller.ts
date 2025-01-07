@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.12.19  이유민      Created     
 2024.12.19  이유민      Modified    리뷰 추가
 2024.12.28  이유민      Modified    리뷰 상세 조회 추가
+2025.01.07  이유민      Modified    에코마켓별 리뷰 조회 추가
 */
 import {
   Body,
@@ -70,6 +71,16 @@ export class ReviewController {
   })
   async findReviewByProductId(@Param('id') id: string) {
     return this.reviewService.findReviewByProductId(id);
+  }
+
+  // 마켓별 리뷰 조회
+  @Get('/market/:id')
+  @ApiOperation({
+    summary: '마켓별 리뷰 조회 API',
+    description: '에코마켓별 리뷰를 조회한다.',
+  })
+  async findReviewByMarketId(@Param('id', ParseIntPipe) id: number) {
+    return this.reviewService.findReviewByMarketId(id);
   }
 
   // 사용자별 작성 리뷰 조회

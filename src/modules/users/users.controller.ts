@@ -13,6 +13,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    전체 사용자 조회 추가
 2024.12.04  이유민      Modified    사용자 유형 수정 추가
 2024.12.04  이유민      Modified    swagger 수정
+2025.01.05  이유민      Modified    검색 및 정렬 추가
 */
 import {
   Controller,
@@ -20,6 +21,7 @@ import {
   Patch,
   Req,
   Param,
+  Query,
   Body,
   UseGuards,
   ParseIntPipe,
@@ -40,8 +42,11 @@ export class UsersController {
     summary: '전체 사용자 정보 조회 API',
     description: '모든 사용자의 정보를 조회한다.',
   })
-  async findAllUser() {
-    return await this.usersService.findAllUser();
+  async findAllUser(
+    @Query('search') search?: string,
+    @Query('sort') sort?: string,
+  ) {
+    return await this.usersService.findAllUser(search, sort);
   }
 
   // 본인 정보 조회

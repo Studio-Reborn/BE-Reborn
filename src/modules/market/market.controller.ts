@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    에코마켓 삭제(관리자) 기능 추가
 2024.12.04  이유민      Modified    생성 및 삭제 요청 조회 기능 추가
 2024.12.04  이유민      Modified    swagger 수정
+2025.01.02  이유민      Modified    검색 및 정렬 추가
 */
 import {
   Controller,
@@ -19,6 +20,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   Req,
   UseGuards,
   ParseIntPipe,
@@ -62,8 +64,14 @@ export class MarketController {
     summary: '에코마켓 전체 조회 API',
     description: '에코마켓을 전체 조회한다.',
   })
-  async findMarketAll() {
-    return await this.marketService.findMarketAll();
+  async findMarketAll(
+    @Query('sort') sort?: string,
+    @Query('search') search?: string,
+  ) {
+    if (sort !== 'name' && sort !== 'latest' && sort !== 'likes')
+      sort = 'latest';
+
+    return await this.marketService.findMarketAll(sort, search);
   }
 
   // 에코마켓 개별 조회

@@ -20,6 +20,8 @@ Date        Author      Status      Description
 2024.12.17  이유민      Modified    product_id 타입 수정
 2024.12.30  이유민      Modified    중고거래 판매 완료 추가
 2024.12.30  이유민      Modified    중고거래 구매내역 조회 추가
+2024.12.30  이유민      Modified    홈 화면 정보 조회 추가
+2025.01.02  이유민      Modified    검색 및 정렬 추가
 */
 import {
   Controller,
@@ -88,10 +90,13 @@ export class ProductController {
     summary: '중고거래 제품 전체 조회 API',
     description: '중고거래 제품을 전체 조회한다.',
   })
-  async findUserProductAll(@Query('sort') sort?: string) {
-    if (!sort) sort = 'id'; // 기본 정렬은 최신순
+  async findUserProductAll(
+    @Query('sort') sort?: string,
+    @Query('search') search?: string,
+  ) {
+    if (!sort) sort = 'latest'; // 기본 정렬은 최신순
 
-    return await this.productService.findUserProductAll(sort);
+    return await this.productService.findUserProductAll(sort, search);
   }
 
   // user_id로 중고거래 판매 제품 조회
@@ -255,8 +260,14 @@ export class ProductController {
   })
   async findMarketProductByMarektId(
     @Param('market_id', ParseIntPipe) market_id: number,
+    @Query('search') search?: string,
+    @Query('sort') sort?: string,
   ) {
-    return await this.productService.findMarketProductByMarektId(market_id);
+    return await this.productService.findMarketProductByMarektId(
+      market_id,
+      search,
+      sort,
+    );
   }
 
   // id로 에코마켓 제품 상세 조회
@@ -303,5 +314,15 @@ export class ProductController {
   })
   async deleteMarketProduct(@Param('id') id: string) {
     return await this.productService.deleteMarketProductById(id);
+  }
+
+  // 홈 화면 관련 정보 조회
+  @Get('/home')
+  @ApiOperation({
+    summary: '홈 화면 정보 조회 API',
+    description: '리본 홈 화면에 표시될 정보를 조회한다.',
+  })
+  async readHomeInfo() {
+    return await this.productService.readHomeInfo();
   }
 }

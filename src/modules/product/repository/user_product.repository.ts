@@ -14,6 +14,7 @@ Date        Author      Status      Description
 2024.12.30  이유민      Modified    중고거래 횟수 조회 추가
 2025.01.02  이유민      Modified    검색 및 정렬 추가
 2025.01.08  이유민      Modified    판매중인 제품만 보기 추가
+2025.01.09  이유민      Modified    사용자의 전체 제품 조회 시 검색, 정렬 및 판매중인 제품만 보기 추가
 */
 import {
   Injectable,
@@ -49,7 +50,8 @@ export class UserProductRepository {
 
     if (search)
       query.andWhere(
-        'product.name LIKE :search OR product.detail LIKE :search',
+        '(product.name LIKE :search OR product.detail LIKE :search)',
+        { search: `%${search}%` },
       );
 
     if (status === 'true') query.andWhere('product.status = "판매중"');
@@ -79,8 +81,13 @@ export class UserProductRepository {
   }
 
   // user_id로 중고거래 제품 조회
-  async findProductByUserId(user_id: number): Promise<UserProduct[]> {
-    return await this.userProductRepository
+  async findProductByUserId(
+    user_id: number,
+    search?: string,
+    sort?: string,
+    status?: string,
+  ): Promise<UserProduct[]> {
+    const query = this.userProductRepository
       .createQueryBuilder('product')
       .leftJoin('product_image', 'image', 'product.product_image_id = image.id')
       .leftJoin('product_like', 'like', 'product.id = like.product_id')
@@ -94,14 +101,33 @@ export class UserProductRepository {
         'image.url AS product_image',
         'COUNT(like.id) AS product_like_cnt',
       ])
-      .where('product.user_id = :user_id AND product.deleted_at IS NULL', {
-        user_id,
-      })
-      .andWhere('like.deleted_at IS NULL')
+      .where(
+        'product.user_id = :user_id AND product.deleted_at IS NULL AND like.deleted_at IS NULL',
+        {
+          user_id,
+        },
+      )
       .groupBy('product.id')
-      .addGroupBy('image.url')
-      .orderBy('product.created_at', 'DESC')
-      .getRawMany();
+      .addGroupBy('image.url');
+
+    if (search)
+      query.andWhere(
+        '(product.name LIKE :search OR product.detail LIKE :search)',
+        { search: `%${search}%` },
+      );
+
+    if (status === 'true') query.andWhere('product.status = "판매중"');
+
+    query.orderBy(
+      sort === 'name' // name일 경우
+        ? 'product.name' // 이름순
+        : sort === 'latest' // latest일 경우
+          ? 'product.created_at' // 최신순
+          : 'product.created_at', // 기본은 최신순
+      sort === 'name' ? 'ASC' : 'DESC',
+    );
+
+    return await query.getRawMany();
   }
 
   // 중고물품 구매 내역 조회

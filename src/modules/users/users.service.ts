@@ -13,6 +13,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    전체 사용자 조회 추가
 2024.12.04  이유민      Modified    사용자 유형 수정 추가
 2025.01.05  이유민      Modified    검색 및 정렬 추가
+2025.01.09  이유민      Modified    사용자 정보 수정 추가
 */
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from 'src/modules/users/users.repository';
@@ -44,6 +45,10 @@ export class UsersService {
 
   async updateNickname(id: number, nickname: string): Promise<object> {
     return this.usersRepository.updateNickname(id, nickname);
+  }
+
+  async updateUser(id: number, updateData: object): Promise<object> {
+    return this.usersRepository.updateUser(id, updateData);
   }
 
   async updateProfileImageId(

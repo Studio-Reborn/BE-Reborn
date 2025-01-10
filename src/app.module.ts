@@ -16,6 +16,8 @@ import { MarketModule } from 'src/modules/market/market.module';
 import { BillingModule } from 'src/modules/billing/billing.module';
 import { ChatModule } from 'src/modules/chat/chat.module';
 import { LikeModule } from 'src/modules/like/like.module';
+import { ReviewModule } from 'src/modules/review/review.module';
+import { LevelModule } from 'src/modules/level/level.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { LikeModule } from 'src/modules/like/like.module';
     BillingModule,
     ChatModule,
     LikeModule,
+    ReviewModule,
+    LevelModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.11.26  이유민      Modified    상품 상태 추가
 2024.11.27  이유민      Modified    status 수정
 2024.12.17  이유민      Modified    product_id 타입 수정
+2024.12.30  이유민      Modified    buyer_user_id 추가
 */
 import {
   Entity,
@@ -27,6 +28,9 @@ export class UserProduct {
 
   @Column({ nullable: false })
   user_id: number;
+
+  @Column({ default: null })
+  buyer_user_id: number;
 
   @Column({ nullable: false })
   product_image_id: number;

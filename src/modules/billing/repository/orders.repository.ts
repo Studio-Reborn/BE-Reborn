@@ -9,6 +9,8 @@ Date        Author      Status      Description
 2024.11.24  이유민      Modified    주문 추가
 2024.11.27  이유민      Modified    userId로 구매내역 조회 추가
 2024.12.04  이유민      Modified    코드 리팩토링
+2024.12.18  이유민      Modified    리뷰 데이터 추가
+2024.12.29  이유민      Modified    items_id 추가
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -48,6 +50,7 @@ export class OrderRepository {
         'product_image',
         'product.product_image_id = product_image.id',
       )
+      .leftJoin('review', 'review', 'items.id = review.items_id')
       .select([
         'orders.id AS order_id',
         'orders.created_at AS order_created_at',
@@ -57,10 +60,12 @@ export class OrderRepository {
         'items.product_id AS product_id',
         'items.quantity AS product_quantity',
         'items.price AS product_price',
+        'items.id AS items_id',
         'product.name AS product_name',
         'product_image.url AS product_image',
         'market.market_name AS market_name',
         'market.id AS market_id',
+        `CASE WHEN review.id IS NOT NULL THEN TRUE ELSE FALSE END AS has_review`,
       ])
       .where('orders.user_id = :user_id AND items.category = "market"', {
         user_id,

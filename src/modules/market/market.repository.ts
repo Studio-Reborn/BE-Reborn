@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    에코마켓 삭제(관리자) 기능 추가
 2024.12.04  이유민      Modified    생성 및 삭제 요청 조회 기능 추가
 2024.12.17  이유민      Modified    코드 리팩토링
+2025.01.02  이유민      Modified    검색 및 정렬 추가
 */
 
 import {
@@ -35,7 +36,23 @@ export class MarketRepository {
   }
 
   // 에코마켓 전체 조회
-  async findMarketAll(): Promise<Market[]> {
+  async findMarketAll(sort?: string, search?: string): Promise<Market[]> {
+    // 정렬 관련
+    let sortName = '';
+    switch (sort) {
+      case 'name':
+        sortName = 'market.market_name';
+        break;
+      case 'latest':
+        sortName = 'market.created_at';
+        break;
+      case 'likes':
+        sortName = 'market_likes';
+        break;
+      default:
+        sortName = 'market_likes';
+    }
+
     return await this.marketRepository
       .createQueryBuilder('market')
       .leftJoin(
@@ -57,7 +74,7 @@ export class MarketRepository {
       ])
       .addSelect((subQuery) => {
         return subQuery
-          .select('COUNT(*)')
+          .select('COALESCE(COUNT(*), 0)', 'market_likes')
           .from('market_like', 'like')
           .where('market.id = like.market_id AND like.deleted_at IS NULL')
           .groupBy('like.market_id');
@@ -65,6 +82,13 @@ export class MarketRepository {
       .where(
         'market.is_verified = true AND market.deleted_at IS NULL AND market.is_deletion_requested = false',
       )
+      .andWhere(
+        search
+          ? 'market.market_name LIKE :search OR market.market_detail LIKE :search'
+          : '1=1',
+        { search: `%${search}%` },
+      )
+      .orderBy(sortName, sort === 'name' ? 'ASC' : 'DESC')
       .getRawMany();
   }
 

@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    회원 기능 추가
 2024.12.04  이유민      Modified    role 컬럼 추가
+2025.01.09  이유민      Modified    description 컬럼 추가
 */
 import {
   Entity,
@@ -44,6 +45,9 @@ export class Users {
     default: 'user',
   })
   role: string;
+
+  @Column({ type: 'longtext', default: null })
+  description: string;
 
   @CreateDateColumn()
   created_at: Date;

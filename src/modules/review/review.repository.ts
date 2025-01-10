@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.12.19  이유민      Modified    리뷰 추가
 2024.12.28  이유민      Modified    오류 수정
 2025.01.07  이유민      Modified    에코마켓별 리뷰 조회 추가
+2025.01.10  이유민      Modified    코드 리팩토링
 */
 import {
   Injectable,
@@ -70,9 +71,15 @@ export class ReviewRepository {
         'profile',
         'users.profile_image_id = profile.id',
       )
+      .leftJoin(
+        'product_image',
+        'product_image',
+        'product.product_image_id = product_image.id',
+      )
       .select([
         'product.id AS product_id',
         'product.name AS product_name',
+        'product_image.url AS product_image_url',
         'users.id AS user_id',
         'users.nickname AS user_nickname',
         'profile.url AS user_profile_image_url',

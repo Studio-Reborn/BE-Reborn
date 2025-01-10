@@ -23,6 +23,7 @@ Date        Author      Status      Description
 2024.12.30  이유민      Modified    홈 화면 정보 조회 추가
 2025.01.02  이유민      Modified    검색 및 정렬 추가
 2025.01.08  이유민      Modified    판매중인 제품만 보기 추가
+2025.01.09  이유민      Modified    사용자의 전체 제품 조회 시 검색, 정렬 및 판매중인 제품만 보기 추가
 */
 import {
   Controller,
@@ -109,8 +110,16 @@ export class ProductController {
   })
   async findUserProductByUserId(
     @Param('user_id', ParseIntPipe) user_id: number,
+    @Query('search') search?: string,
+    @Query('sort') sort?: string,
+    @Query('status') status?: string,
   ) {
-    return await this.productService.findUserProductByUserId(user_id);
+    return await this.productService.findUserProductByUserId(
+      user_id,
+      search,
+      sort,
+      status,
+    );
   }
 
   // 본인 중고거래 판매 제품 조회

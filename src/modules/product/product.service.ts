@@ -15,6 +15,8 @@ Date        Author      Status      Description
 2024.12.30  이유민      Modified    중고거래 구매내역 조회 추가
 2024.12.30  이유민      Modified    홈 화면 정보 조회 추가
 2025.01.02  이유민      Modified    검색 및 정렬 추가
+2025.01.08  이유민      Modified    판매중인 제품만 보기 추가
+2025.01.09  이유민      Modified    사용자의 전체 제품 조회 시 검색, 정렬 및 판매중인 제품만 보기 추가
 */
 import { Injectable } from '@nestjs/common';
 import { UserProduct } from 'src/modules/product/entity/user_product.entity';
@@ -43,8 +45,9 @@ export class ProductService {
   async findUserProductAll(
     sort: string,
     search?: string,
+    status?: string,
   ): Promise<UserProduct[]> {
-    return this.userProductRepository.findProductAll(sort, search);
+    return this.userProductRepository.findProductAll(sort, search, status);
   }
 
   // id로 중고거래 제품 개별 조회
@@ -53,8 +56,18 @@ export class ProductService {
   }
 
   // user_id로 중고거래 제품 조회
-  async findUserProductByUserId(user_id: number): Promise<UserProduct[]> {
-    return this.userProductRepository.findProductByUserId(user_id);
+  async findUserProductByUserId(
+    user_id: number,
+    search?: string,
+    sort?: string,
+    status?: string,
+  ): Promise<UserProduct[]> {
+    return this.userProductRepository.findProductByUserId(
+      user_id,
+      search,
+      sort,
+      status,
+    );
   }
 
   // 중고물품 구매 내역 조회

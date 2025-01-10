@@ -12,6 +12,9 @@ Date        Author      Status      Description
 2024.11.13  이유민      Modified    닉네임 수정 추가
 2024.12.04  이유민      Modified    전체 사용자 조회 추가
 2024.12.04  이유민      Modified    사용자 유형 수정 추가
+2025.01.05  이유민      Modified    검색 및 정렬 추가
+2025.01.07  이유민      Modified    코드 리팩토링
+2025.01.09  이유민      Modified    사용자 정보 수정 추가
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -30,8 +33,8 @@ export class UsersRepository {
     return await this.usersRepository.save(users);
   }
 
-  async findAllUser(): Promise<Users[]> {
-    return await this.usersRepository
+  async findAllUser(search?: string, sort?: string): Promise<Users[]> {
+    const query = this.usersRepository
       .createQueryBuilder('user')
       .leftJoin(
         'profile_image',
@@ -47,8 +50,24 @@ export class UsersRepository {
         'user.role AS user_role',
         'profile.url AS profile_image',
       ])
-      .where('user.deleted_at IS NULL')
-      .getRawMany();
+      .where('user.deleted_at IS NULL');
+
+    if (search)
+      query.andWhere(
+        '(user.nickname LIKE :search OR user.email LIKE :search OR user.phone LIKE :search)',
+        { search: `%${search}%` },
+      );
+
+    query.orderBy(
+      sort === 'latest'
+        ? 'user.created_at'
+        : sort === 'name'
+          ? 'user.nickname'
+          : 'user.nickname',
+      sort === 'latest' ? 'DESC' : 'ASC',
+    );
+
+    return await query.getRawMany();
   }
 
   async findUserByEmail(email: string): Promise<Users | undefined> {
@@ -69,12 +88,25 @@ export class UsersRepository {
   }
 
   async findUserById(id: number): Promise<Users> {
-    const user = await this.usersRepository
+    return await this.usersRepository
       .createQueryBuilder('user')
+      .leftJoin(
+        'profile_image',
+        'profile',
+        'user.profile_image_id = profile.id',
+      )
+      .select([
+        'user.id AS id',
+        'user.nickname AS nickname',
+        'user.email AS email',
+        'user.phone AS phone',
+        'user.role AS role',
+        'user.description AS description',
+        'user.profile_image_id AS profile_image_id',
+        'profile.url AS profile_image_url',
+      ])
       .where('user.id = :id', { id })
-      .getOne();
-
-    return user;
+      .getRawOne();
   }
 
   async updateNickname(id: number, nickname: string): Promise<object> {
@@ -84,6 +116,15 @@ export class UsersRepository {
     await this.usersRepository.save(user);
 
     return { message: '닉네임이 변경되었습니다.' };
+  }
+
+  async updateUser(id: number, updateData: object): Promise<object> {
+    const user = await this.findUserById(id);
+
+    Object.assign(user, updateData);
+    await this.usersRepository.save(user);
+
+    return { message: '유저 데이터가 정상적으로 변경되었습니다.' };
   }
 
   async updateProfileImageId(

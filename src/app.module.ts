@@ -18,6 +18,7 @@ import { ChatModule } from 'src/modules/chat/chat.module';
 import { LikeModule } from 'src/modules/like/like.module';
 import { ReviewModule } from 'src/modules/review/review.module';
 import { LevelModule } from 'src/modules/level/level.module';
+import { CartModule } from 'src/modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { LevelModule } from 'src/modules/level/level.module';
     LikeModule,
     ReviewModule,
     LevelModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2025.01.15  이유민      Created     
 2025.01.15  이유민      Modified    장바구니 아이템 추가
+2025.01.16  이유민      Modified    아이템 조회 응답 결과 수정
 */
 import {
   Injectable,
@@ -67,6 +68,10 @@ export class CartItemRepository {
             WHEN market_product.id IS NOT NULL THEN market.market_name
             WHEN remake_product.id IS NOT NULL THEN "Reborn"
         END) AS market_name`,
+        `(CASE 
+            WHEN market_product.id IS NOT NULL THEN market.id
+            WHEN remake_product.id IS NOT NULL THEN "Reborn"
+        END) AS market_id`,
         `(CASE 
             WHEN market_product.id IS NOT NULL THEN pi1.url
             WHEN remake_product.id IS NOT NULL THEN pi2.url

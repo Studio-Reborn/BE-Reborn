@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2025.01.11  이유민      Created     
 2025.01.11  이유민      Modified    장바구니 추가
 2025.01.15  이유민      Modified    장바구니 아이템 추가
+2025.01.17  이유민      Modified    사용자의 모든 아이템 삭제 추가
 */
 import {
   Controller,
@@ -124,5 +125,23 @@ export class CartController {
       throw new UnauthorizedException('로그인 후 이용 가능합니다.');
 
     return await this.cartService.deleteItemById(id, req.user.user_id);
+  }
+
+  @Delete('')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '장바구니 아이템 전체 삭제 API',
+    description: '장바구니 아이템을 전체 삭제한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async deleteItemAll(@Req() req) {
+    if (!req.user.user_id)
+      throw new UnauthorizedException('로그인 후 이용 가능합니다.');
+
+    return await this.cartService.deleteItemAll(req.user.user_id);
   }
 }

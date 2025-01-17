@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.11.24  이유민      Modified    주문 추가
 2024.11.27  이유민      Modified    userId로 구매내역 조회 추가
 2024.11.28  이유민      Modified    order_items category 추가
+2025.01.17  이유민      Modified    코드 리팩토링
 */
 import { Injectable } from '@nestjs/common';
 import { PaymentRepository } from 'src/modules/billing/repository/payments.repository';
@@ -50,7 +51,6 @@ export class BillingService {
       detail_address,
       extra_address,
       order_items,
-      category,
     } = tossPaymentDTO;
 
     // 결제
@@ -89,7 +89,7 @@ export class BillingService {
       quantity: item.quantity,
       price: item.price,
       total_price: item.price * item.quantity,
-      category,
+      category: item.category,
     }));
 
     await this.orderItemsRepository.createOrderItems(orderItemsData);

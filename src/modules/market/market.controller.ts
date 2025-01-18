@@ -11,6 +11,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    생성 및 삭제 요청 조회 기능 추가
 2024.12.04  이유민      Modified    swagger 수정
 2025.01.02  이유민      Modified    검색 및 정렬 추가
+2025.01.18  이유민      Modified    내 마켓 관련 API 추가
 */
 import {
   Controller,
@@ -75,13 +76,51 @@ export class MarketController {
   }
 
   // 에코마켓 개별 조회
-  @Get(':id')
+  @Get('/info/:id')
   @ApiOperation({
     summary: '에코마켓 개별 조회 API',
     description: '에코마켓을 개별로 조회한다.',
   })
   async findMarketById(@Param('id', ParseIntPipe) id: number) {
     return await this.marketService.findMarketById(id);
+  }
+
+  // 본인 에코마켓 조회
+  @Get('/my')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '에코마켓 개별 조회 API',
+    description: '에코마켓을 개별로 조회한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async findMarketByUserId(@Req() req) {
+    if (!req.user.user_id)
+      throw new UnauthorizedException('로그인 후 접근 가능합니다.');
+
+    return await this.marketService.findMarketByUserId(req.user.user_id);
+  }
+
+  // 본인 에코마켓 조회
+  @Get('/my/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '에코마켓 개별 조회 API',
+    description: '에코마켓을 개별로 조회한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async findMyMarketById(@Req() req, @Param('id', ParseIntPipe) id: number) {
+    if (!req.user.user_id)
+      throw new UnauthorizedException('로그인 후 접근 가능합니다.');
+
+    return await this.marketService.findMyMarketById(id, req.user.user_id);
   }
 
   // 새로 신청한 에코마켓 조회

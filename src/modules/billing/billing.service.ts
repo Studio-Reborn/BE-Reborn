@@ -11,6 +11,7 @@ Date        Author      Status      Description
 2024.11.27  이유민      Modified    userId로 구매내역 조회 추가
 2024.11.28  이유민      Modified    order_items category 추가
 2025.01.17  이유민      Modified    코드 리팩토링
+2025.01.18  이유민      Modified    내 마켓 관련 API 추가
 */
 import { Injectable } from '@nestjs/common';
 import { PaymentRepository } from 'src/modules/billing/repository/payments.repository';
@@ -20,6 +21,7 @@ import { TossPaymentDTO } from 'src/modules/billing/billing.dto';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
+import { OrderItems } from 'src/modules/billing/entity/order_items.entity';
 
 @Injectable()
 export class BillingService {
@@ -51,6 +53,8 @@ export class BillingService {
       detail_address,
       extra_address,
       order_items,
+      name,
+      phone,
     } = tossPaymentDTO;
 
     // 결제
@@ -80,6 +84,8 @@ export class BillingService {
       detail_address,
       extra_address,
       payments_id: response.data.paymentKey,
+      name,
+      phone,
     });
 
     // 주문 제품 데이터 생성
@@ -149,5 +155,13 @@ export class BillingService {
   // 리본 리메이크 구매내역 조회
   async findRemakePurchasesByUserId(user_id: number): Promise<object[]> {
     return await this.orderRepository.findRemakePurchasesByUserId(user_id);
+  }
+
+  // items 수정
+  async updateItemById(
+    id: number,
+    updateData: Partial<OrderItems>,
+  ): Promise<object> {
+    return await this.orderItemsRepository.updateItemById(id, updateData);
   }
 }

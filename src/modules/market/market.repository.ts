@@ -11,6 +11,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    생성 및 삭제 요청 조회 기능 추가
 2024.12.17  이유민      Modified    코드 리팩토링
 2025.01.02  이유민      Modified    검색 및 정렬 추가
+2025.01.18  이유민      Modified    내 마켓 관련 API 추가
 */
 
 import {
@@ -105,6 +106,74 @@ export class MarketRepository {
     if (!market) throw new NotFoundException('리소스를 찾을 수 없습니다.');
 
     return market;
+  }
+
+  // 본인의 에코마켓 전체 조회
+  async findMarketByUserId(user_id: number): Promise<Market[]> {
+    return await this.marketRepository
+      .createQueryBuilder('market')
+      .select(['market.id AS market_id', 'market.market_name AS market_name'])
+      .addSelect(
+        // 판매 제품 수
+        (subQuery) =>
+          subQuery
+            .select('COUNT(product.id)')
+            .from('market_product', 'product')
+            .where(
+              'product.market_id = market.id AND product.deleted_at IS NULL',
+            ),
+        'product_count',
+      )
+      .addSelect(
+        // 배송 전 제품 수
+        (subQuery) =>
+          subQuery
+            .select('COUNT(items.id)')
+            .from('order_items', 'items')
+            .leftJoin(
+              'market_product',
+              'product',
+              'product.id = items.product_id',
+            )
+            .where(
+              'product.market_id = market.id AND items.status = "결제완료"',
+            ),
+        'before_delivery_count',
+      )
+      .where('market.user_id = :user_id AND market.deleted_at IS NULL', {
+        user_id,
+      })
+      .getRawMany();
+  }
+
+  // 본인의 에코마켓 상세 조회
+  async findMyMarketById(id: number, user_id: number): Promise<Market[]> {
+    return await this.marketRepository
+      .createQueryBuilder('market')
+      .leftJoin('market_product', 'product', 'market.id = product.market_id')
+      .leftJoin('order_items', 'items', 'product.id = items.product_id')
+      .leftJoin('orders', 'orders', 'items.order_id = orders.id')
+      .select([
+        'product.id AS product_id',
+        'product.name AS product_name',
+        'items.id AS items_id',
+        'items.price AS items_price',
+        'items.quantity AS items_quantity',
+        'orders.id AS orders_id',
+        'orders.postcode AS orders_postcode',
+        'orders.address AS orders_address',
+        'orders.detail_address AS orders_detail_address',
+        'orders.extra_address AS orders_extra_address',
+        'orders.name AS user_name',
+        'orders.phone AS user_phone',
+        'items.status AS items_status',
+        'items.tracking_number AS items_tracking_number',
+      ])
+      .where(
+        'market.id = :id AND market.user_id = :user_id AND market.deleted_at IS NULL',
+        { id, user_id },
+      )
+      .getRawMany();
   }
 
   // 새로 신청한 에코마켓 조회

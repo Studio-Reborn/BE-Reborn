@@ -12,6 +12,7 @@ Date        Author      Status      Description
 2024.11.28  이유민      Modified    order_items category 추가
 2025.01.17  이유민      Modified    코드 리팩토링
 2025.01.18  이유민      Modified    내 마켓 관련 API 추가
+2025.01.18  이유민      Modified    리본 리메이크 판매 내역 추가
 */
 import { Injectable } from '@nestjs/common';
 import { PaymentRepository } from 'src/modules/billing/repository/payments.repository';
@@ -145,6 +146,10 @@ export class BillingService {
   // user_id로 조회
   async findBillingByUserId(user_id: number): Promise<object[]> {
     return await this.orderRepository.findOrderByUserId(user_id);
+  }
+
+  async findRemakeItem(): Promise<OrderItems[]> {
+    return await this.orderItemsRepository.findRemakeItem();
   }
 
   // 에코마켓 구매내역 조회

@@ -15,6 +15,7 @@ Date        Author      Status      Description
 2025.01.02  이유민      Modified    검색 및 정렬 추가
 2025.01.08  이유민      Modified    판매중인 제품만 보기 추가
 2025.01.09  이유민      Modified    사용자의 전체 제품 조회 시 검색, 정렬 및 판매중인 제품만 보기 추가
+2025.01.19  이유민      Modified    회원 탈퇴 추가
 */
 import {
   Injectable,
@@ -192,6 +193,15 @@ export class UserProductRepository {
 
     product.deleted_at = new Date();
     await this.userProductRepository.save(product);
+
+    return { message: '성공적으로 삭제되었습니다.' };
+  }
+
+  // 유저의 모든 중고거래 제품 삭제
+  async deleteProductByUserId(user_id: number): Promise<object> {
+    await this.userProductRepository.update(user_id, {
+      deleted_at: new Date(),
+    });
 
     return { message: '성공적으로 삭제되었습니다.' };
   }

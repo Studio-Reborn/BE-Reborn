@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.24  이유민      Created     
 2024.11.24  이유민      Modified    결제 추가
 2024.11.24  이유민      Modified    주문 추가
+2025.01.19  이유민      Modified    모듈 코드 리팩토링
 */
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -30,5 +31,6 @@ import { BillingService } from 'src/modules/billing/billing.service';
     BillingService,
   ],
   controllers: [BillingController],
+  exports: [OrderItemsRepository],
 })
 export class BillingModule {}

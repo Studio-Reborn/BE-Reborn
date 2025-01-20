@@ -23,7 +23,7 @@ import {
 } from '@nestjs/common';
 import { Users } from 'src/modules/users/users.entity';
 import { UsersRepository } from 'src/modules/users/users.repository';
-import { MarketRepository } from 'src/modules/market/market.repository';
+import { MarketRepository } from 'src/modules/market/repository/market.repository';
 import { UserProductRepository } from 'src/modules/product/repository/user_product.repository';
 
 @Injectable()

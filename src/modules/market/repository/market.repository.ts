@@ -81,7 +81,7 @@ export class MarketRepository {
           .groupBy('like.market_id');
       }, 'market_likes')
       .where(
-        'market.is_verified = true AND market.deleted_at IS NULL AND market.is_deletion_requested = false',
+        'market.is_verified = "approved" AND market.deleted_at IS NULL AND (market.is_deletion_requested IS NULL OR market.is_deletion_requested = "rejected")',
       )
       .andWhere(
         search
@@ -98,7 +98,7 @@ export class MarketRepository {
     const market = await this.marketRepository
       .createQueryBuilder('market')
       .where(
-        'market.id = :id AND market.is_verified = true AND market.deleted_at IS NULL AND market.is_deletion_requested = false',
+        'market.id = :id AND market.is_verified = "approved" AND market.deleted_at IS NULL AND (market.is_deletion_requested IS NULL OR market.is_deletion_requested = "rejected")',
         { id },
       )
       .getOne();
@@ -112,7 +112,12 @@ export class MarketRepository {
   async findMarketByUserId(user_id: number): Promise<Market[]> {
     return await this.marketRepository
       .createQueryBuilder('market')
-      .select(['market.id AS market_id', 'market.market_name AS market_name'])
+      .select([
+        'market.id AS market_id',
+        'market.market_name AS market_name',
+        'market.is_verified AS market_is_verified',
+        'market.is_deletion_requested AS market_is_deletion',
+      ])
       .addSelect(
         // 판매 제품 수
         (subQuery) =>
@@ -153,6 +158,11 @@ export class MarketRepository {
       .leftJoin('market_product', 'product', 'market.id = product.market_id')
       .leftJoin('order_items', 'items', 'product.id = items.product_id')
       .leftJoin('orders', 'orders', 'items.order_id = orders.id')
+      .leftJoin(
+        'profile_image',
+        'profile',
+        'market.profile_image_id = profile.id',
+      )
       .select([
         'product.id AS product_id',
         'product.name AS product_name',
@@ -168,6 +178,12 @@ export class MarketRepository {
         'orders.phone AS user_phone',
         'items.status AS items_status',
         'items.tracking_number AS items_tracking_number',
+        'market.market_name AS market_name',
+        'market.is_verified AS market_is_verified',
+        'market.is_deletion_requested AS market_is_deletion',
+        'market.market_detail AS market_detail',
+        'profile.url AS market_profile_url',
+        'profile.id AS market_profile_id',
       ])
       .where(
         'market.id = :id AND market.user_id = :user_id AND market.deleted_at IS NULL',
@@ -197,7 +213,7 @@ export class MarketRepository {
         'users.email AS user_email',
       ])
       .where(
-        'market.is_verified = false AND market.deleted_at IS NULL AND market.is_deletion_requested = false',
+        'market.is_verified = "pending" AND market.deleted_at IS NULL AND market.is_deletion_requested IS NULL',
       )
       .getRawMany();
   }
@@ -223,42 +239,34 @@ export class MarketRepository {
         'users.email AS user_email',
       ])
       .where(
-        'market.is_verified = true AND market.deleted_at IS NULL AND market.is_deletion_requested = true',
+        'market.is_verified = "approved" AND market.deleted_at IS NULL AND market.is_deletion_requested = "pending"',
       )
       .getRawMany();
   }
 
   // 에코마켓 신청 확인
-  async checkCreateMarket(id: number): Promise<object> {
+  async updateIsVerified(id: number, is_verified: string): Promise<object> {
     const market = await this.marketRepository
       .createQueryBuilder('market')
       .where(
-        'market.id = :id AND market.is_verified = false AND market.deleted_at IS NULL AND market.is_deletion_requested = false',
+        'market.id = :id AND market.is_verified = "pending" AND market.deleted_at IS NULL AND market.is_deletion_requested IS NULL',
         { id },
       )
       .getOne();
 
     if (!market) throw new NotFoundException('리소스를 찾을 수 없습니다.');
 
-    Object.assign(market, { is_verified: true });
-    await this.marketRepository.save(market);
+    await this.marketRepository.update(id, { is_verified });
 
-    return { message: '요청된 마켓을 성공적으로 생성했습니다.' };
+    return { message: '요청된 마켓을 확인했습니다.' };
   }
 
   // 에코마켓 정보 수정
   async updateMarketInfo(
-    user_id: number,
     id: number,
     updateData: Partial<Market>,
   ): Promise<object> {
-    const market = await this.findMarketById(id);
-
-    if (user_id !== market.user_id)
-      throw new UnauthorizedException('권한이 없습니다.');
-
-    Object.assign(market, updateData);
-    await this.marketRepository.save(market);
+    await this.marketRepository.update(id, updateData);
 
     return { message: '마켓 정보가 성공적으로 변경되었습니다.' };
   }
@@ -270,27 +278,32 @@ export class MarketRepository {
     if (user_id !== market.user_id)
       throw new UnauthorizedException('권한이 없습니다.');
 
-    Object.assign(market, { is_deletion_requested: true });
+    Object.assign(market, { is_deletion_requested: 'pending' });
     await this.marketRepository.save(market);
 
     return { message: '마켓 삭제 요청이 성공적으로 전송되었습니다.' };
   }
 
-  // 에코마켓 삭제
-  async deleteMarketById(id: number): Promise<object> {
+  // 관리자 에코마켓 삭제 승인 또는 반려
+  async deleteMarketById(
+    id: number,
+    is_deletion_requested: string,
+  ): Promise<object> {
     const market = await this.marketRepository
       .createQueryBuilder('market')
       .where(
-        'market.id = :id AND market.deleted_at IS NULL AND market.is_deletion_requested = true',
+        'market.id = :id AND market.deleted_at IS NULL AND market.is_deletion_requested = "pending"',
         { id },
       )
       .getOne();
 
     if (!market) throw new NotFoundException('리소스를 찾을 수 없습니다.');
 
-    market.deleted_at = new Date();
-    await this.marketRepository.save(market);
+    await this.marketRepository.update(id, { is_deletion_requested });
 
-    return { message: '리메이크 제품이 성공적으로 삭제되었습니다.' };
+    if (is_deletion_requested === 'approved')
+      await this.marketRepository.update(id, { deleted_at: new Date() });
+
+    return { message: '에코마켓 삭제 요청을 확인했습니다.' };
   }
 }

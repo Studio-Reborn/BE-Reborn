@@ -12,8 +12,13 @@ Date        Author      Status      Description
 2025.01.02  이유민      Modified    검색 및 정렬 추가
 2025.01.18  이유민      Modified    내 마켓 관련 API 추가
 2025.01.20  이유민      Modified    요청 반려 관련 API 추가
+2025.01.21  이유민      Modified    에코마켓 신청 철회 API 추가
 */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Market, Rejection } from 'src/modules/market/market.entity';
 import { MarketRepository } from 'src/modules/market/repository/market.repository';
 import { RejectionRepository } from 'src/modules/market/repository/rejection.repository';
@@ -129,5 +134,22 @@ export class MarketService {
     });
 
     return { message: '반려 사유를 숨겼습니다.' };
+  }
+
+  async deleteRejectedMarket(
+    market_id: number,
+    user_id: number,
+  ): Promise<object> {
+    const market = await this.marketRepository.findMyMarketById(
+      market_id,
+      user_id,
+    );
+
+    if (market.length === 0 || market[0]['market_is_verified'] !== 'rejected')
+      throw new NotFoundException('리소스를 찾을 수 없습니다.');
+
+    await this.marketRepository.deleteMarketById(market_id, 'approved');
+
+    return { message: '신청 마켓이 삭제되었습니다.' };
   }
 }

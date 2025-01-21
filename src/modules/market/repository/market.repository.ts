@@ -12,6 +12,7 @@ Date        Author      Status      Description
 2024.12.17  이유민      Modified    코드 리팩토링
 2025.01.02  이유민      Modified    검색 및 정렬 추가
 2025.01.18  이유민      Modified    내 마켓 관련 API 추가
+2025.01.21  이유민      Modified    에코마켓 신청 철회 API 추가
 */
 
 import {
@@ -291,10 +292,7 @@ export class MarketRepository {
   ): Promise<object> {
     const market = await this.marketRepository
       .createQueryBuilder('market')
-      .where(
-        'market.id = :id AND market.deleted_at IS NULL AND market.is_deletion_requested = "pending"',
-        { id },
-      )
+      .where('market.id = :id AND market.deleted_at IS NULL', { id })
       .getOne();
 
     if (!market) throw new NotFoundException('리소스를 찾을 수 없습니다.');

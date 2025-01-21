@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.11.21  이유민      Modified    user_id 추가
 2024.11.22  이유민      Modified    is_deletion_requested 추가
 2025.01.20  이유민      Modified    요청 반려 테이블 추가
+2025.01.21  이유민      Modified    오류 수정
 */
 import {
   Entity,
@@ -49,9 +50,9 @@ export class Market {
   // 에코마켓 삭제 요청
   @Column({
     type: 'enum',
-    enum: ['', 'pending', 'approved', 'rejected'],
+    enum: [null, 'pending', 'approved', 'rejected'],
     nullable: true,
-    default: '',
+    default: null,
   })
   is_deletion_requested: string;
 

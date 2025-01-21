@@ -13,6 +13,7 @@ Date        Author      Status      Description
 2025.01.02  이유민      Modified    검색 및 정렬 추가
 2025.01.18  이유민      Modified    내 마켓 관련 API 추가
 2025.01.20  이유민      Modified    요청 반려 관련 API 추가
+2025.01.21  이유민      Modified    에코마켓 신청 철회 API 추가
 */
 import {
   Controller,
@@ -346,5 +347,28 @@ export class MarketController {
     if (!id) throw new BadRequestException('입력하지 않은 값이 있습니다.');
 
     return await this.marketService.changeVisibility(id);
+  }
+
+  @Delete('/rejection/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '삭제 요청된 에코마켓 삭제 API',
+    description: '관리자가 삭제 요청된 에코마켓을 확인 후 삭제한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async deleteRejectedMarket(
+    @Req() req,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    if (!req.user)
+      throw new UnauthorizedException('로그인 후 사용 가능합니다.');
+
+    if (!id) throw new BadRequestException('입력하지 않은 값이 있습니다.');
+
+    return await this.marketService.deleteRejectedMarket(id, req.user.user_id);
   }
 }

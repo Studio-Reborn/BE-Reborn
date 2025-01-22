@@ -13,8 +13,10 @@ Date        Author      Status      Description
 2025.01.18  이유민      Modified    내 마켓 관련 API 추가
 2025.01.20  이유민      Modified    요청 반려 관련 API 추가
 2025.01.21  이유민      Modified    에코마켓 신청 철회 API 추가
+2025.01.22  이유민      Modified    마켓명 확인 코드 추가
 */
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -32,6 +34,15 @@ export class MarketService {
 
   // 에코마켓 생성
   async createMarket(marketData: Partial<Market>): Promise<Market> {
+    const nameCheck = await this.marketRepository.findMarketByName(
+      marketData.market_name,
+    );
+
+    if (nameCheck)
+      throw new ConflictException(
+        '이미 존재하는 마켓명입니다. 다른 이름을 사용해주세요.',
+      );
+
     return this.marketRepository.createMarket(marketData);
   }
 
@@ -70,6 +81,15 @@ export class MarketService {
 
   // 에코마켓 재심사
   async retryMarket(id: number, updateData: Partial<Market>): Promise<object> {
+    const nameCheck = await this.marketRepository.findMarketByName(
+      updateData.market_name,
+    );
+
+    if (nameCheck && nameCheck.id !== id)
+      throw new ConflictException(
+        '이미 존재하는 마켓명입니다. 다른 이름을 사용해주세요.',
+      );
+
     await this.marketRepository.updateMarketInfo(id, updateData);
 
     return { message: '재심사 요청되었습니다.' };
@@ -85,6 +105,17 @@ export class MarketService {
 
     if (user_id !== market.user_id)
       throw new UnauthorizedException('권한이 없습니다.');
+
+    if (market.market_name !== updateData.market_name) {
+      const nameCheck = await this.marketRepository.findMarketByName(
+        updateData.market_name,
+      );
+
+      if (nameCheck)
+        throw new ConflictException(
+          '이미 존재하는 마켓명입니다. 다른 이름을 사용해주세요.',
+        );
+    }
 
     return await this.marketRepository.updateMarketInfo(id, updateData);
   }

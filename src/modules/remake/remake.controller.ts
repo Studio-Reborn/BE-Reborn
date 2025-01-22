@@ -18,6 +18,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    요청 삭제 기능 추가
 2024.12.04  이유민      Modified    swagger 수정
 2024.12.18  이유민      Modified    id 타입 수정
+2025.01.22  이유민      Modified    페이지네이션 추가
 */
 import {
   Body,
@@ -147,8 +148,10 @@ export class RemakeController {
     summary: '리메이크 제품 전체 조회 API',
     description: '리본 리메이크 제품을 전체 조회한다.',
   })
-  async findRemakeProductAll() {
-    return this.remakeService.findRemakeProductAll();
+  async findRemakeProductAll(@Query('page') page?: number) {
+    if (!page) page = 1;
+
+    return this.remakeService.findRemakeProductAll(page);
   }
 
   // 리본 리메이크 제품 개별 조회

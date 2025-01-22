@@ -13,6 +13,7 @@ Date        Author      Status      Description
 2025.01.02  이유민      Modified    검색 및 정렬 추가
 2025.01.18  이유민      Modified    내 마켓 관련 API 추가
 2025.01.21  이유민      Modified    에코마켓 신청 철회 API 추가
+2025.01.22  이유민      Modified    마켓명 확인 코드 추가
 */
 
 import {
@@ -92,6 +93,13 @@ export class MarketRepository {
       )
       .orderBy(sortName, sort === 'name' ? 'ASC' : 'DESC')
       .getRawMany();
+  }
+
+  async findMarketByName(name: string): Promise<Market> {
+    return await this.marketRepository
+      .createQueryBuilder('market')
+      .where('market.market_name = :name', { name })
+      .getOne();
   }
 
   // id로 에코마켓 개별 조회

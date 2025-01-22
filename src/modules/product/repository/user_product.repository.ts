@@ -16,6 +16,7 @@ Date        Author      Status      Description
 2025.01.08  이유민      Modified    판매중인 제품만 보기 추가
 2025.01.09  이유민      Modified    사용자의 전체 제품 조회 시 검색, 정렬 및 판매중인 제품만 보기 추가
 2025.01.19  이유민      Modified    회원 탈퇴 추가
+2025.01.22  이유민      Modified    페이지네이션 추가
 */
 import {
   Injectable,
@@ -44,7 +45,13 @@ export class UserProductRepository {
     sort: string,
     search?: string,
     status?: string,
-  ): Promise<UserProduct[]> {
+    page?: number,
+  ): Promise<{
+    products: UserProduct[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }> {
     const query = this.userProductRepository
       .createQueryBuilder('product')
       .where('product.deleted_at IS NULL');
@@ -66,7 +73,19 @@ export class UserProductRepository {
       sort === 'name' ? 'ASC' : 'DESC',
     );
 
-    return await query.getMany();
+    // 페이지네이션
+    const limit = 9; // 한 페이지에 가져올 데이터 수
+    const skip = (page - 1) * limit; // 가져올 시작 위치
+
+    query.skip(skip).take(limit);
+
+    const [products, total] = await query.getManyAndCount();
+    return {
+      products, // 현재 페이지의 데이터
+      total, // 전체 데이터 개수
+      currentPage: page, // 현재 페이지 번호
+      totalPages: Math.ceil(total / limit), // 전체 페이지 수
+    };
   }
 
   // id로 중고거래 제품 개별 조회

@@ -17,6 +17,7 @@ Date        Author      Status      Description
 2025.01.02  이유민      Modified    검색 및 정렬 추가
 2025.01.08  이유민      Modified    판매중인 제품만 보기 추가
 2025.01.09  이유민      Modified    사용자의 전체 제품 조회 시 검색, 정렬 및 판매중인 제품만 보기 추가
+2025.01.22  이유민      Modified    페이지네이션 추가
 */
 import { Injectable } from '@nestjs/common';
 import { UserProduct } from 'src/modules/product/entity/user_product.entity';
@@ -46,8 +47,19 @@ export class ProductService {
     sort: string,
     search?: string,
     status?: string,
-  ): Promise<UserProduct[]> {
-    return this.userProductRepository.findProductAll(sort, search, status);
+    page?: number,
+  ): Promise<{
+    products: UserProduct[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    return this.userProductRepository.findProductAll(
+      sort,
+      search,
+      status,
+      page,
+    );
   }
 
   // id로 중고거래 제품 개별 조회

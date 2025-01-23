@@ -14,6 +14,7 @@ Date        Author      Status      Description
 2025.01.18  이유민      Modified    내 마켓 관련 API 추가
 2025.01.20  이유민      Modified    요청 반려 관련 API 추가
 2025.01.21  이유민      Modified    에코마켓 신청 철회 API 추가
+2025.01.23  이유민      Modified    에코마켓 관련 페이지네이션 추가
 */
 import {
   Controller,
@@ -71,11 +72,14 @@ export class MarketController {
   async findMarketAll(
     @Query('sort') sort?: string,
     @Query('search') search?: string,
+    @Query('page') page?: number,
   ) {
     if (sort !== 'name' && sort !== 'latest' && sort !== 'likes')
       sort = 'latest';
 
-    return await this.marketService.findMarketAll(sort, search);
+    if (!page) page = 1;
+
+    return await this.marketService.findMarketAll(sort, search, page);
   }
 
   // 에코마켓 개별 조회

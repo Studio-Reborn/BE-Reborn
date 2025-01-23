@@ -14,6 +14,7 @@ Date        Author      Status      Description
 2025.01.18  이유민      Modified    내 마켓 관련 API 추가
 2025.01.21  이유민      Modified    에코마켓 신청 철회 API 추가
 2025.01.22  이유민      Modified    마켓명 확인 코드 추가
+2025.01.23  이유민      Modified    에코마켓 관련 페이지네이션 추가
 */
 
 import {
@@ -39,7 +40,16 @@ export class MarketRepository {
   }
 
   // 에코마켓 전체 조회
-  async findMarketAll(sort?: string, search?: string): Promise<Market[]> {
+  async findMarketAll(
+    sort?: string,
+    search?: string,
+    page?: number,
+  ): Promise<{
+    data: Market[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }> {
     // 정렬 관련
     let sortName = '';
     switch (sort) {
@@ -56,43 +66,48 @@ export class MarketRepository {
         sortName = 'market_likes';
     }
 
-    return await this.marketRepository
+    // 페이지네이션 관련
+    const limit = 6;
+    const skip = (page - 1) * limit;
+
+    const markets = await this.marketRepository.query(`
+      SELECT market.id AS id ,
+         market.created_at AS created_at ,
+         market.updated_at AS updated_at ,
+         market.deleted_at AS deleted_at ,
+         market.is_deletion_requested AS is_deletion_requested ,
+         market.is_verified AS is_verified ,
+         market.market_detail AS market_detail ,
+         market.market_name AS market_name ,
+         market.profile_image_id AS profile_image_id ,
+         profile.url AS profile_image_url,
+         COALESCE((SELECT COUNT(*)
+          FROM market_like
+          WHERE market_like.market_id = market.id AND market_like.deleted_at IS NULL
+          GROUP BY market_like.market_id), 0) AS market_likes
+      FROM market market
+      LEFT JOIN profile_image profile ON market.profile_image_id = profile.id
+      WHERE market.is_verified = "approved"
+        AND market.deleted_at IS NULL
+        AND (market.is_deletion_requested IS NULL OR market.is_deletion_requested = "rejected")
+        ${search ? `AND (market.market_name LIKE "%${search}%" OR market.market_detail LIKE "%${search}%")` : ''}
+      ORDER BY ${sortName} ${sort === 'name' ? 'ASC' : 'DESC'}
+      LIMIT ${limit} OFFSET ${skip};
+      `);
+
+    const total = await this.marketRepository
       .createQueryBuilder('market')
-      .leftJoin(
-        'profile_image',
-        'profile',
-        'market.profile_image_id = profile.id',
-      )
-      .select([
-        'market.id AS id',
-        'market.created_at AS created_at',
-        'market.updated_at AS updated_at',
-        'market.deleted_at AS deleted_at',
-        'market.is_deletion_requested AS is_deletion_requested',
-        'market.is_verified AS is_verified',
-        'market.market_detail AS market_detail',
-        'market.market_name AS market_name',
-        'market.profile_image_id AS profile_image_id',
-        'profile.url AS profile_image_url',
-      ])
-      .addSelect((subQuery) => {
-        return subQuery
-          .select('COALESCE(COUNT(*), 0)', 'market_likes')
-          .from('market_like', 'like')
-          .where('market.id = like.market_id AND like.deleted_at IS NULL')
-          .groupBy('like.market_id');
-      }, 'market_likes')
       .where(
         'market.is_verified = "approved" AND market.deleted_at IS NULL AND (market.is_deletion_requested IS NULL OR market.is_deletion_requested = "rejected")',
       )
-      .andWhere(
-        search
-          ? 'market.market_name LIKE :search OR market.market_detail LIKE :search'
-          : '1=1',
-        { search: `%${search}%` },
-      )
-      .orderBy(sortName, sort === 'name' ? 'ASC' : 'DESC')
-      .getRawMany();
+      .getCount();
+
+    return {
+      data: markets, // 현재 페이지의 데이터
+      total, // 전체 데이터 개수
+      currentPage: page, // 현재 페이지 번호
+      totalPages: Math.ceil(total / limit), // 전체 페이지 수
+    };
   }
 
   async findMarketByName(name: string): Promise<Market> {

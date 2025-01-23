@@ -19,6 +19,7 @@ Date        Author      Status      Description
 2025.01.09  이유민      Modified    사용자의 전체 제품 조회 시 검색, 정렬 및 판매중인 제품만 보기 추가
 2025.01.22  이유민      Modified    페이지네이션 추가
 2025.01.23  이유민      Modified    에코마켓 관련 페이지네이션 추가
+2025.01.23  이유민      Modified    중고거래 사용자 검색 페이지네이션 추가
 */
 import { Injectable } from '@nestjs/common';
 import { UserProduct } from 'src/modules/product/entity/user_product.entity';
@@ -74,12 +75,19 @@ export class ProductService {
     search?: string,
     sort?: string,
     status?: string,
-  ): Promise<UserProduct[]> {
+    page?: number,
+  ): Promise<{
+    data: UserProduct[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }> {
     return this.userProductRepository.findProductByUserId(
       user_id,
       search,
       sort,
       status,
+      page,
     );
   }
 

@@ -14,6 +14,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    요청 삭제 기능 추가
 2024.12.17  이유민      Modified    코드 리팩토링
 2024.12.18  이유민      Modified    id 타입 수정
+2025.01.22  이유민      Modified    페이지네이션 추가
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -74,28 +75,42 @@ export class RemakeRepository {
   }
 
   // 리메이크 제품 전체 조회
-  async findRemakeProductAll(): Promise<RemakeProduct[]> {
-    return await this.remakeProductRepository
+  async findRemakeProductAll(page?: number): Promise<{
+    products: RemakeProduct[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    // 페이지네이션 관련
+    const limit = 9;
+    const skip = (page - 1) * limit;
+
+    const products = await this.remakeProductRepository.query(`
+      SELECT rproduct.created_at AS created_at,
+            rproduct.id AS id,
+            rproduct.matter AS matter,
+            rproduct.name AS name,
+            rproduct.price AS price,
+            rproduct.product_image_id AS product_image_id,
+            image.url AS product_image_url
+      FROM remake_product rproduct
+      LEFT JOIN product_image image ON rproduct.product_image_id = image.id
+      WHERE rproduct.deleted_at IS NULL
+      ORDER BY rproduct.created_at ASC
+      LIMIT ${limit} OFFSET ${skip};
+    `);
+
+    const total = await this.remakeProductRepository
       .createQueryBuilder('rproduct')
-      .leftJoin(
-        'product_image',
-        'image',
-        'rproduct.product_image_id = image.id',
-      )
-      .select([
-        'rproduct.created_at AS created_at',
-        'rproduct.deleted_at AS deleted_at',
-        'rproduct.updated_at AS updated_at',
-        'rproduct.detail AS detail',
-        'rproduct.id AS id',
-        'rproduct.matter AS matter',
-        'rproduct.name AS name',
-        'rproduct.price AS price',
-        'rproduct.product_image_id AS product_image_id',
-        'image.url AS product_image_url',
-      ])
       .where('rproduct.deleted_at IS NULL')
-      .getRawMany();
+      .getCount();
+
+    return {
+      products, // 현재 페이지의 데이터
+      total, // 전체 데이터 개수
+      currentPage: page, // 현재 페이지 번호
+      totalPages: Math.ceil(total / limit), // 전체 페이지 수
+    };
   }
 
   // 리메이크 제품 개별 조회

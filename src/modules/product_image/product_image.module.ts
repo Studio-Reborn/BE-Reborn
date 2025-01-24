@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.11.20  이유민      Created     
 2024.11.20  이유민      Modified    상품 이미지 추가
+2025.01.19  이유민      Modified    모듈 코드 리팩토링
 */
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -19,5 +20,6 @@ import { ProductImageController } from 'src/modules/product_image/product_image.
   imports: [TypeOrmModule.forFeature([ProductImage])],
   providers: [ProductImageRepository, ProductImageService],
   controllers: [ProductImageController],
+  exports: [ProductImageRepository, ProductImageService],
 })
 export class ProductImageModule {}

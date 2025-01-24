@@ -13,6 +13,7 @@ Date        Author      Status      Description
 2024.12.30  이유민      Modified    에코마켓 제품 수 조회 추가
 2025.01.05  이유민      Modified    검색 및 정렬 추가
 2025.01.08  이유민      Modified    에코마켓 전체 제품 조회 시 리뷰 및 좋아요 수 조회 추가
+2025.01.23  이유민      Modified    에코마켓 관련 페이지네이션 추가
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -39,51 +40,54 @@ export class MarketProductRepository {
     market_id: number,
     search?: string,
     sort?: string,
-  ): Promise<MarketProduct[]> {
-    return await this.marketProductRepository
+    page?: number,
+  ): Promise<{
+    data: MarketProduct[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    // 페이지네이션 관련
+    const limit = 9;
+    const skip = (page - 1) * limit;
+
+    const products = await this.marketProductRepository.query(`
+      SELECT product.id AS id ,
+         product.market_id AS market_id ,
+         product.detail AS detail ,
+         product.name AS name ,
+         product.price AS price ,
+         product.product_image_id AS product_image_id ,
+         product.status AS status ,
+         product_image.url AS product_image_url,
+         COUNT(product_like.id) AS product_like_cnt,
+         COUNT(review.id) AS product_review_cnt
+      FROM market_product product
+      LEFT JOIN product_image product_image ON product.product_image_id = product_image.id
+      LEFT JOIN product_like product_like ON product.id = product_like.product_id
+      LEFT JOIN review review ON product.id = review.product_id
+      WHERE product.market_id = ${market_id} AND product.deleted_at IS NULL
+        AND product_like.deleted_at IS NULL AND review.deleted_at IS NULL
+        ${search ? `AND (product.name LIKE "%${search}%" OR product.detail LIKE "%${search}%")` : ''}
+        GROUP BY product.id, product_like.id, review.id
+      ORDER BY ${sort === 'name' ? `product.name ASC` : `product.created_at DESC`}
+      LIMIT ${limit} OFFSET ${skip};
+      `);
+
+    const total = await this.marketProductRepository
       .createQueryBuilder('product')
-      .leftJoin('product_like', 'like', 'product.id = like.product_id')
-      .leftJoin(
-        'product_image',
-        'product_image',
-        'product.product_image_id = product_image.id',
+      .where(
+        'product.market_id = :market_id AND product.status = "판매중" AND product.deleted_at IS NULL',
+        { market_id },
       )
-      .leftJoin('review', 'review', 'product.id = review.product_id')
-      .select([
-        'product.id AS id',
-        'product.market_id AS market_id',
-        'product.detail AS detail',
-        'product.name AS name',
-        'product.price AS price',
-        'product.product_image_id AS product_image_id',
-        'product.status AS status',
-        'product_image.url AS product_image_url',
-        'COUNT(like.id) AS product_like_cnt',
-        'COUNT(review.id) AS product_review_cnt',
-      ])
-      .where('product.market_id = :market_id AND product.deleted_at IS NULL', {
-        market_id,
-      })
-      .andWhere(
-        search
-          ? '(product.name LIKE :search OR product.detail LIKE :search)'
-          : '1=1',
-        { search: `%${search}%` },
-      )
-      .andWhere('like.deleted_at IS NULL')
-      .andWhere('review.deleted_at IS NULL')
-      .groupBy('product.id')
-      .addGroupBy('like.id')
-      .addGroupBy('review.id')
-      .orderBy(
-        sort === 'name' // name일 경우
-          ? 'product.name' // 이름순
-          : sort === 'latest' // latest일 경우
-            ? 'product.created_at' // 최신순
-            : 'product.created_at', // 기본은 최신순
-        sort === 'name' ? 'ASC' : 'DESC',
-      )
-      .getRawMany();
+      .getCount();
+
+    return {
+      data: products, // 현재 페이지의 데이터
+      total, // 전체 데이터 개수
+      currentPage: page, // 현재 페이지 번호
+      totalPages: Math.ceil(total / limit), // 전체 페이지 수
+    };
   }
 
   // id로 마켓 제품 개별 조회

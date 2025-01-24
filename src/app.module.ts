@@ -18,6 +18,8 @@ import { ChatModule } from 'src/modules/chat/chat.module';
 import { LikeModule } from 'src/modules/like/like.module';
 import { ReviewModule } from 'src/modules/review/review.module';
 import { LevelModule } from 'src/modules/level/level.module';
+import { CartModule } from 'src/modules/cart/cart.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -39,6 +41,21 @@ import { LevelModule } from 'src/modules/level/level.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: {
+          host: 'smtp.naver.com',
+          port: process.env.EMAIL_PORT,
+          auth: {
+            user: process.env.EMAIL_ADDRESS,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+        },
+        defaults: {
+          from: `'Reborn' <${process.env.EMAIL_ADDRESS}>`, //보낸사람
+        },
+      }),
+    }),
     RemakeModule,
     AuthModule,
     ProductModule,
@@ -52,6 +69,7 @@ import { LevelModule } from 'src/modules/level/level.module';
     LikeModule,
     ReviewModule,
     LevelModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService],

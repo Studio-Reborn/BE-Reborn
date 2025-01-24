@@ -13,6 +13,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    요청 조회 기능 추가
 2024.12.04  이유민      Modified    요청 삭제 기능 추가
 2024.12.18  이유민      Modified    id 타입 수정
+2025.01.22  이유민      Modified    페이지네이션 추가
 */
 import { Injectable } from '@nestjs/common';
 import { RemakeRepository } from 'src/modules/remake/remake.repository';
@@ -65,8 +66,13 @@ export class RemakeService {
   }
 
   // 리메이크 제품 전체 조회
-  async findRemakeProductAll(): Promise<RemakeProduct[]> {
-    return await this.remakeRepository.findRemakeProductAll();
+  async findRemakeProductAll(page?: number): Promise<{
+    products: RemakeProduct[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    return await this.remakeRepository.findRemakeProductAll(page);
   }
 
   // 리메이크 제품 개별 조회

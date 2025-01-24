@@ -12,6 +12,7 @@ Date        Author      Status      Description
 2024.11.13  이유민      Modified    비밀번호 변경 추가
 2024.11.18  이유민      Modified    swagger 추가
 2024.12.04  이유민      Modified    role 추가
+2025.01.19  이유민      Modified    아이디 찾기 및 비밀번호 찾기 추가
 */
 import {
   Controller,
@@ -26,6 +27,7 @@ import {
   Patch,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
@@ -163,5 +165,38 @@ export class AuthController {
       req.user.user_id,
       bcrypt.hashSync(changePassword, 10),
     );
+  }
+
+  // 아이디 찾기
+  @Get('/find-email')
+  @ApiOperation({
+    summary: '아이디 찾기 API',
+    description: '아이디를 찾는다.',
+  })
+  async findEmail(
+    @Query('nickname') nickname: string,
+    @Query('phone') phone: string,
+  ) {
+    if (!nickname || !phone)
+      throw new BadRequestException('입력하지 않은 값이 있습니다.');
+
+    return await this.authService.findEmail(nickname, phone);
+  }
+
+  // 비밀번호 찾기
+  @Get('/find-password')
+  @ApiOperation({
+    summary: '비밀번호 찾기 API',
+    description: '비밀번호를 찾는다.',
+  })
+  async findPassword(
+    @Query('email') email: string,
+    @Query('nickname') nickname: string,
+    @Query('phone') phone: string,
+  ) {
+    if (!nickname || !phone || !email)
+      throw new BadRequestException('입력하지 않은 값이 있습니다.');
+
+    return await this.authService.findPassword(email, nickname, phone);
   }
 }

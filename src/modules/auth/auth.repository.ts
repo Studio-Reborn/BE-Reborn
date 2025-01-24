@@ -9,8 +9,9 @@ Date        Author      Status      Description
 2024.11.07  이유민      Modified    회원 기능 추가
 2024.11.12  이유민      Modified    jwt 추가
 2024.11.13  이유민      Modified    비밀번호 변경 추가
+2025.01.19  이유민      Modified    아이디 찾기 및 비밀번호 찾기 추가
 */
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Auth } from 'src/modules/auth/auth.entity';
@@ -60,5 +61,34 @@ export class AuthRepository {
       .createQueryBuilder('auth')
       .where('auth.id = :id', { id })
       .getOne();
+  }
+
+  // 아이디 찾기
+  async findEmail(nickname: string, phone: string): Promise<Auth> {
+    const user = await this.authRepository
+      .createQueryBuilder('auth')
+      .leftJoin('users', 'users', 'auth.id = users.auth_id')
+      .leftJoin(
+        'profile_image',
+        'profile',
+        'users.profile_image_id = profile.id',
+      )
+      .select([
+        'users.id AS user_id',
+        'users.email AS user_email',
+        'users.phone AS user_phone',
+        'users.nickname AS user_nickname',
+        'users.created_at AS user_created_at',
+        'profile.url AS profile_image_url',
+      ])
+      .where(
+        'users.nickname = :nickname AND users.phone = :phone AND users.deleted_at IS NULL',
+        { nickname, phone },
+      )
+      .getRawOne();
+
+    if (!user) throw new NotFoundException('사용자를 찾을 수 없습니다.');
+
+    return user;
   }
 }

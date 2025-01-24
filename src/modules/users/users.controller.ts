@@ -15,6 +15,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    swagger 수정
 2025.01.05  이유민      Modified    검색 및 정렬 추가
 2025.01.09  이유민      Modified    사용자 정보 수정 추가
+2025.01.19  이유민      Modified    회원 탈퇴 추가
 */
 import {
   Controller,
@@ -27,6 +28,7 @@ import {
   UseGuards,
   ParseIntPipe,
   UnauthorizedException,
+  Delete,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/modules/auth/jwt/jwt-auth.guard';
 import { UsersService } from 'src/modules/users/users.service';
@@ -128,5 +130,24 @@ export class UsersController {
       throw new UnauthorizedException('관리자만 접근 가능합니다.');
 
     return await this.usersService.updateRole(id);
+  }
+
+  // 회원 탈퇴
+  @Delete()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '사용자 정보 수정 API',
+    description: '사용자의 정보를 수정한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
+  async deleteUser(@Req() req) {
+    if (!req.user)
+      throw new UnauthorizedException('로그인 후 사용 가능합니다.');
+
+    return await this.usersService.deleteUser(req.user.user_id);
   }
 }

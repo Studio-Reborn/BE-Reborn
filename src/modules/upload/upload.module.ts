@@ -7,22 +7,17 @@ History
 Date        Author      Status      Description
 2024.11.13  이유민      Created     
 2024.11.13  이유민      Modified    파일 업로드 추가
+2025.01.19  이유민      Modified    모듈 코드 리팩토링
 */
 import { Module } from '@nestjs/common';
 import { UploadController } from 'src/modules/upload/upload.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Profile } from 'src/modules/profile_image/profile_image.entity';
-import { ProfileRepository } from 'src/modules/profile_image/profile_image.repository';
-import { ProfileService } from 'src/modules/profile_image/profile_image.service';
-import { Users } from 'src/modules/users/users.entity';
-import { UsersRepository } from 'src/modules/users/users.repository';
-import { UsersService } from 'src/modules/users/users.service';
-import { ProductImage } from 'src/modules/product_image/product_image.entity';
-import { ProductImageRepository } from 'src/modules/product_image/product_image.repository';
-import { ProductImageService } from 'src/modules/product_image/product_image.service';
+import { UsersModule } from 'src/modules/users/users.module';
+import { MarketModule } from 'src/modules/market/market.module';
+import { ProfileModule } from 'src/modules/profile_image/profile_image.module';
+import { ProductImageModule } from 'src/modules/product_image/product_image.module';
 
 @Module({
   imports: [
@@ -40,15 +35,10 @@ import { ProductImageService } from 'src/modules/product_image/product_image.ser
         fileSize: 10 * 1024 * 1024,
       },
     }),
-    TypeOrmModule.forFeature([Profile, Users, ProductImage]),
-  ],
-  providers: [
-    ProfileRepository,
-    ProfileService,
-    UsersRepository,
-    UsersService,
-    ProductImageRepository,
-    ProductImageService,
+    UsersModule,
+    MarketModule,
+    ProfileModule,
+    ProductImageModule,
   ],
   controllers: [UploadController],
 })

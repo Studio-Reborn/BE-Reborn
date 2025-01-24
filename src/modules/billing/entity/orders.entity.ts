@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2024.11.24  이유민      Created     
 2024.11.24  이유민      Modified    주문 추가
 2024.11.26  이유민      Modified    product_id 제거
+2025.01.18  이유민      Modified    name 및 phone 추가
 */
 import {
   Entity,
@@ -25,6 +26,12 @@ export class Order {
 
   @Column({ nullable: false })
   user_id: number;
+
+  @Column({ nullable: false })
+  name: string;
+
+  @Column({ nullable: false })
+  phone: string;
 
   @Column({ nullable: false })
   postcode: number;

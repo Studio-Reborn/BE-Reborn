@@ -15,6 +15,7 @@ Date        Author      Status      Description
 2025.01.05  이유민      Modified    검색 및 정렬 추가
 2025.01.07  이유민      Modified    코드 리팩토링
 2025.01.09  이유민      Modified    사용자 정보 수정 추가
+2025.01.19  이유민      Modified    회원 탈퇴 추가
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -73,7 +74,7 @@ export class UsersRepository {
   async findUserByEmail(email: string): Promise<Users | undefined> {
     const user = await this.usersRepository
       .createQueryBuilder('user')
-      .where('user.email = :email', { email })
+      .where('user.email = :email AND user.deleted_at IS NULL', { email })
       .getOne();
     return user;
   }
@@ -146,5 +147,12 @@ export class UsersRepository {
     await this.usersRepository.save(user);
 
     return { message: '사용자 유형이 변경되었습니다.' };
+  }
+
+  // 회원 탈퇴
+  async deleteUser(id: number): Promise<object> {
+    await this.usersRepository.update(id, { deleted_at: new Date() });
+
+    return { message: '회원 탈퇴되었습니다.' };
   }
 }

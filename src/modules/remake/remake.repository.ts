@@ -15,6 +15,7 @@ Date        Author      Status      Description
 2024.12.17  이유민      Modified    코드 리팩토링
 2024.12.18  이유민      Modified    id 타입 수정
 2025.01.22  이유민      Modified    페이지네이션 추가
+2025.01.25  이유민      Modified    이미지 url 관련 오류 수정
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -99,6 +100,12 @@ export class RemakeRepository {
       ORDER BY rproduct.created_at ASC
       LIMIT ${limit} OFFSET ${skip};
     `);
+
+    products.forEach((product) => {
+      if (product.product_image_url) {
+        product.product_image_url = JSON.parse(product.product_image_url);
+      }
+    });
 
     const total = await this.remakeProductRepository
       .createQueryBuilder('rproduct')

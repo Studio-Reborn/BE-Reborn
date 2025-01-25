@@ -1,0 +1,68 @@
+name: Deploy to cloudtype
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: youmin29/reborn
+          stage: main
+          yaml: |
+            name: be-reborn
+            app: node@22
+            options:
+              ports: "4000"
+              install: npm install
+              build: npm run build
+              start: npm start
+              env:
+                - name: PORT
+                  value: "4000"
+                - name: DB_HOST
+                  value: "${{ secrets.DB_HOST }}"
+                - name: DB_PORT
+                  value: "${{ secrets.DB_PORT }}"
+                - name: DB_USERNAME
+                  value: "${{ secrets.DB_USERNAME }}"
+                - name: DB_PASSWORD
+                  value: "${{ secrets.DB_PASSWORD }}"
+                - name: DB_DATABASE
+                  value: "${{ secrets.DB_DATABASE }}"
+                - name: AI_SERVER_URL
+                  value: "${{ secrets.AI_SERVER_URL }}"
+                - name: JWT_SECRET_KEY
+                  value: "${{ secrets.JWT_SECRET_KEY }}"
+                - name: JWT_REFRESH_SECRET_KEY
+                  value: "${{ secrets.JWT_REFRESH_SECRET_KEY }}"
+                - name: JWT_ACCESS_EXPIRATION
+                  value: "${{ secrets.JWT_ACCESS_EXPIRATION }}"
+                - name: JWT_REFRESH_EXPIRATION
+                  value: "${{ secrets.JWT_REFRESH_EXPIRATION }}"
+                - name: TOSS_SECRET_KEY
+                  value: "${{ secrets.TOSS_SECRET_KEY }}"
+                - name: TOSS_API_URL
+                  value: "${{ secrets.TOSS_API_URL }}"
+                - name: EMAIL_PORT
+                  value: "${{ secrets.EMAIL_PORT }}"
+                - name: EMAIL_ADDRESS
+                  value: "${{ secrets.EMAIL_ADDRESS }}"
+                - name: EMAIL_PASSWORD
+                  value: "${{ secrets.EMAIL_PASSWORD }}"
+              buildenv: []
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}

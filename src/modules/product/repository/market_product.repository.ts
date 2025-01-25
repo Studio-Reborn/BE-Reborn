@@ -129,6 +129,8 @@ export class MarketProductRepository {
       .where('product.id = :id AND product.deleted_at IS NULL', { id })
       .getRawOne();
 
+    product.product_image_url = JSON.parse(product.product_image_url);
+
     if (!product) throw new NotFoundException('상품을 찾을 수 없습니다.');
 
     return product;

@@ -122,7 +122,7 @@ export class RemakeRepository {
 
   // 리메이크 제품 개별 조회
   async findRemakeProductById(id: string): Promise<RemakeProduct> {
-    return await this.remakeProductRepository
+    const product = await this.remakeProductRepository
       .createQueryBuilder('rproduct')
       .leftJoin(
         'product_image',
@@ -137,10 +137,14 @@ export class RemakeRepository {
         'rproduct.product_image_id AS product_image_id',
         'rproduct.matter AS matter',
         '"리본(Reborn)" AS market_name',
-        'product_image.url',
+        'product_image.url AS product_image_url',
       ])
       .where('rproduct.id = :id AND rproduct.deleted_at IS NULL', { id })
       .getRawOne();
+
+    product.product_image_url = JSON.parse(product.product_image_url);
+
+    return product;
   }
 
   // 리메이크 제품 수정

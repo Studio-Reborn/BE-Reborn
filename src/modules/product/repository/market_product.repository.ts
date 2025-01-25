@@ -14,6 +14,7 @@ Date        Author      Status      Description
 2025.01.05  이유민      Modified    검색 및 정렬 추가
 2025.01.08  이유민      Modified    에코마켓 전체 제품 조회 시 리뷰 및 좋아요 수 조회 추가
 2025.01.23  이유민      Modified    에코마켓 관련 페이지네이션 추가
+2025.01.25  이유민      Modified    이미지 url 관련 오류 수정
 */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -73,6 +74,12 @@ export class MarketProductRepository {
       ORDER BY ${sort === 'name' ? `product.name ASC` : `product.created_at DESC`}
       LIMIT ${limit} OFFSET ${skip};
       `);
+
+    products.forEach((product) => {
+      if (product.product_image_url) {
+        product.product_image_url = JSON.parse(product.product_image_url);
+      }
+    });
 
     const total = await this.marketProductRepository
       .createQueryBuilder('product')

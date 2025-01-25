@@ -18,6 +18,7 @@ Date        Author      Status      Description
 2025.01.19  이유민      Modified    회원 탈퇴 추가
 2025.01.22  이유민      Modified    페이지네이션 추가
 2025.01.23  이유민      Modified    중고거래 사용자 검색 페이지네이션 추가
+2025.01.25  이유민      Modified    이미지 url 관련 오류 수정
 */
 import {
   Injectable,
@@ -137,6 +138,12 @@ export class UserProductRepository {
       ORDER BY ${sort === 'name' ? 'product.name ASC' : 'product.created_at DESC'}
       LIMIT ${limit} OFFSET ${skip};
       `);
+
+    products.forEach((product) => {
+      if (product.product_image) {
+        product.product_image = JSON.parse(product.product_image);
+      }
+    });
 
     const total = await this.userProductRepository
       .createQueryBuilder('product')

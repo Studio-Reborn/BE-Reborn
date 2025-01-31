@@ -67,6 +67,10 @@ jobs:
                   value: "${{ secrets.EMAIL_ADDRESS }}"
                 - name: EMAIL_PASSWORD
                   value: "${{ secrets.EMAIL_PASSWORD }}"
+                - name: GOOGLE_CREDENTIALS
+                  value: "${{ secrets.GOOGLE_CREDENTIALS }}"
+                - name: GOOGLE_DRIVE_FOLDER_ID
+                  value: "${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}"
               buildenv: []
             context:
               git:

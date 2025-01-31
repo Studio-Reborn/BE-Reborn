@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.12.06  이유민      Modified    채팅 추가
 2024.12.09  이유민      Modified    내 채팅 전체 조회 추가
 2024.12.17  이유민      Modified    product_id 타입 수정
+2025.01.31  이유민      Modified    이미지 url 관련 오류 수정
 */
 import {
   Injectable,
@@ -33,7 +34,7 @@ export class ChatRepository {
 
   // 내 채팅 전체 조회
   async findMyChatAll(user_id: number): Promise<Chat[]> {
-    return await this.chatRepository
+    const chats = await this.chatRepository
       .createQueryBuilder('chat')
       .leftJoin('users', 'seller', 'chat.seller_id = seller.id')
       .leftJoin('users', 'buyer', 'chat.buyer_id = buyer.id')
@@ -96,6 +97,14 @@ export class ChatRepository {
       })
       .orderBy('latest_created_at', 'DESC')
       .getRawMany();
+
+    chats.forEach((chat) => {
+      if (chat.product_image) {
+        chat.product_image = JSON.parse(chat.product_image);
+      }
+    });
+
+    return chats;
   }
 
   // chat id로 채팅방 검색

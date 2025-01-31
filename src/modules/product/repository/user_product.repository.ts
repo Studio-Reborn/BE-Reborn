@@ -19,6 +19,7 @@ Date        Author      Status      Description
 2025.01.22  이유민      Modified    페이지네이션 추가
 2025.01.23  이유민      Modified    중고거래 사용자 검색 페이지네이션 추가
 2025.01.25  이유민      Modified    이미지 url 관련 오류 수정
+2025.01.31  이유민      Modified    이미지 url 관련 오류 수정
 */
 import {
   Injectable,
@@ -162,7 +163,7 @@ export class UserProductRepository {
 
   // 중고물품 구매 내역 조회
   async findProductByBuyerUserId(user_id: number): Promise<UserProduct[]> {
-    return await this.userProductRepository
+    const data = await this.userProductRepository
       .createQueryBuilder('product')
       .leftJoin('product_image', 'image', 'product.product_image_id = image.id')
       .leftJoin('users', 'users', 'product.user_id = users.id')
@@ -184,6 +185,14 @@ export class UserProductRepository {
       )
       .orderBy('product.updated_at', 'DESC')
       .getRawMany();
+
+    data.forEach((data) => {
+      if (data.product_image) {
+        data.product_image = JSON.parse(data.product_image);
+      }
+    });
+
+    return data;
   }
 
   // 중고거래 거래 완료

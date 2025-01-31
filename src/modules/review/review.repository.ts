@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.12.28  이유민      Modified    오류 수정
 2025.01.07  이유민      Modified    에코마켓별 리뷰 조회 추가
 2025.01.10  이유민      Modified    코드 리팩토링
+2025.01.31  이유민      Modified    이미지 url 관련 오류 수정
 */
 import {
   Injectable,
@@ -167,6 +168,12 @@ export class ReviewRepository {
         new Date(b.review_created_at).getTime() -
         new Date(a.review_created_at).getTime(),
     );
+
+    combinedReviews.forEach((review) => {
+      if (review.product_image_url) {
+        review.product_image_url = JSON.parse(review.product_image_url);
+      }
+    });
 
     return combinedReviews;
   }

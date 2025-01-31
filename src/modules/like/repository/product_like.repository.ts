@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.12.16  이유민      Modified    상품 좋아요 추가
 2024.12.17  이유민      Modified    product_id 타입 수정
 2024.12.18  이유민      Modified    마이페이지 관련 기능 추가
+2025.01.31  이유민      Modified    이미지 url 관련 오류 수정
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -167,6 +168,26 @@ export class ProductLikeRepository {
       .where('like.user_id = :user_id AND like.deleted_at IS NULL', { user_id })
       .orderBy('like.created_at', 'DESC')
       .getRawMany();
+
+    preLoved.forEach((preLoved) => {
+      if (preLoved.product_image_url) {
+        preLoved.product_image_url = JSON.parse(preLoved.product_image_url);
+      }
+    });
+
+    ecoMarket.forEach((ecoMarket) => {
+      if (ecoMarket.product_image_url) {
+        ecoMarket.product_image_url = JSON.parse(ecoMarket.product_image_url);
+      }
+    });
+
+    rebornRemake.forEach((rebornRemake) => {
+      if (rebornRemake.product_image_url) {
+        rebornRemake.product_image_url = JSON.parse(
+          rebornRemake.product_image_url,
+        );
+      }
+    });
 
     return {
       preLoved: preLoved,

@@ -27,6 +27,7 @@ Date        Author      Status      Description
 2025.01.22  이유민      Modified    페이지네이션 추가
 2025.01.23  이유민      Modified    에코마켓 관련 페이지네이션 추가
 2025.01.23  이유민      Modified    중고거래 사용자 검색 페이지네이션 추가
+2025.01.31  이유민      Modified    중고거래 판매 제품 조회 오류 수정
 */
 import {
   Controller,
@@ -150,7 +151,15 @@ export class ProductController {
     required: true,
   })
   async findMyProductByUserId(@Req() req) {
-    return await this.productService.findUserProductByUserId(req.user.user_id);
+    const response = await this.productService.findUserProductByUserId(
+      req.user.user_id,
+      '',
+      'latest',
+      '',
+      1,
+    );
+
+    return response.data;
   }
 
   // 중고거래 제품 상세 조회

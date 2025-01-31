@@ -12,6 +12,7 @@ Date        Author      Status      Description
 2024.12.18  이유민      Modified    리뷰 데이터 추가
 2024.12.29  이유민      Modified    items_id 추가
 2025.01.18  이유민      Modified    코드 리팩토링
+2025.01.31  이유민      Modified    이미지 url 관련 오류 수정
 */
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -40,7 +41,7 @@ export class OrderRepository {
   }
 
   async findMarketPurchasesByUserId(user_id: number): Promise<object[]> {
-    return await this.orderRepository
+    const data = await this.orderRepository
       .createQueryBuilder('orders')
       .leftJoin('payments', 'payments', 'orders.payments_id = payments.id')
       .leftJoin('order_items', 'items', 'orders.id = items.order_id')
@@ -73,10 +74,18 @@ export class OrderRepository {
       })
       .orderBy({ 'orders.created_at': 'DESC' })
       .getRawMany();
+
+    data.forEach((item) => {
+      if (item.product_image) {
+        item.product_image = JSON.parse(item.product_image);
+      }
+    });
+
+    return data;
   }
 
   async findRemakePurchasesByUserId(user_id: number): Promise<object[]> {
-    return await this.orderRepository
+    const data = await this.orderRepository
       .createQueryBuilder('orders')
       .leftJoin('payments', 'payments', 'orders.payments_id = payments.id')
       .leftJoin('order_items', 'items', 'orders.id = items.order_id')
@@ -106,5 +115,13 @@ export class OrderRepository {
       })
       .orderBy({ 'orders.created_at': 'DESC' })
       .getRawMany();
+
+    data.forEach((item) => {
+      if (item.product_image) {
+        item.product_image = JSON.parse(item.product_image);
+      }
+    });
+
+    return data;
   }
 }

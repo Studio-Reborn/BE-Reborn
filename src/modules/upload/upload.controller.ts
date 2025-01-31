@@ -10,6 +10,7 @@ Date        Author      Status      Description
 2024.11.18  이유민      Modified    swagger 추가
 2024.11.20  이유민      Modified    상품 이미지 업로드 추가
 2024.11.21  이유민      Modified    에코마켓 프로필 이미지 업로드 추가
+2025.01.27  이유민      Modified    구글 드라이브 연동 추가
 */
 import {
   Controller,
@@ -27,6 +28,8 @@ import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
 import { ProfileService } from 'src/modules/profile_image/profile_image.service';
 import { UsersService } from 'src/modules/users/users.service';
 import { ProductImageService } from 'src/modules/product_image/product_image.service';
+import { GoogleDriveService } from 'src/services/google-drive.service';
+import * as path from 'path';
 
 @Controller('upload')
 @ApiTags('파일 업로드 API')
@@ -35,6 +38,7 @@ export class UploadController {
     private readonly profileService: ProfileService,
     private readonly usersService: UsersService,
     private readonly productImageService: ProductImageService,
+    private readonly googleDriveService: GoogleDriveService,
   ) {}
 
   // 회원 프로필 이미지 업로드
@@ -51,8 +55,20 @@ export class UploadController {
     required: true,
   })
   async uploadFile(@Req() req, @UploadedFile() file: Express.Multer.File) {
+    const uploadDir = path.resolve(__dirname, '../../../uploads');
+    const filePath = path.join(uploadDir, file.filename);
+    const fileName = file.filename;
+    const mimeType = file.mimetype;
+
+    // 구글 드라이브에 파일 저장
+    const fileUrl = await this.googleDriveService.uploadFile(
+      filePath,
+      fileName,
+      mimeType,
+    );
+
     const profile_image = await this.profileService.createProfile({
-      url: file.path,
+      url: fileUrl.split('uc?id=')[1],
     });
 
     // 회원 테이블 profile_iamge_id 값 수정
@@ -60,6 +76,7 @@ export class UploadController {
       req.user.user_id,
       profile_image.id,
     );
+
     return { message: '프로필 이미지가 변경되었습니다.' };
   }
 
@@ -83,8 +100,20 @@ export class UploadController {
     if (!req.user)
       throw new UnauthorizedException('로그인 후 이용 가능합니다.');
 
+    const uploadDir = path.resolve(__dirname, '../../../uploads');
+    const filePath = path.join(uploadDir, file.filename);
+    const fileName = file.filename;
+    const mimeType = file.mimetype;
+
+    const fileUrl = await this.googleDriveService.uploadFile(
+      filePath,
+      fileName,
+      mimeType,
+    );
+    console.log(fileUrl);
+
     return await this.profileService.createProfile({
-      url: file.path,
+      url: fileUrl.split('uc?id=')[1],
     });
   }
 
@@ -95,7 +124,20 @@ export class UploadController {
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
     const imagesUrl = [];
-    for (let i = 0; i < files.length; i++) imagesUrl.push(files[i].path);
+    for (let i = 0; i < files.length; i++) {
+      const uploadDir = path.resolve(__dirname, '../../../uploads');
+      const filePath = path.join(uploadDir, files[i].filename);
+      const fileName = files[i].filename;
+      const mimeType = files[i].mimetype;
+
+      const fileUrl = await this.googleDriveService.uploadFile(
+        filePath,
+        fileName,
+        mimeType,
+      );
+
+      imagesUrl.push(fileUrl.split('uc?id=')[1]);
+    }
 
     return await this.productImageService.createProductImage({
       url: imagesUrl,

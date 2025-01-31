@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2025.01.15  이유민      Created     
 2025.01.15  이유민      Modified    장바구니 아이템 추가
 2025.01.16  이유민      Modified    아이템 조회 응답 결과 수정
+2025.01.31  이유민      Modified    이미지 url 관련 오류 수정
 */
 import {
   Injectable,
@@ -32,7 +33,7 @@ export class CartItemRepository {
 
   // 장바구니 아이템 조회
   async findItemByUserId(user_id: number): Promise<CartItem[]> {
-    return await this.itemRepository
+    const items = await this.itemRepository
       .createQueryBuilder('item')
       .innerJoin('cart', 'cart', 'item.cart_id = cart.id')
       .leftJoin(
@@ -83,6 +84,14 @@ export class CartItemRepository {
       ])
       .where('cart.user_id = :user_id AND item.deleted_at IS NULL', { user_id })
       .getRawMany();
+
+    items.forEach((item) => {
+      if (item.product_image_url) {
+        item.product_image_url = JSON.parse(item.product_image_url);
+      }
+    });
+
+    return items;
   }
 
   async findItemById(id: number): Promise<CartItem & { user_id: number }> {

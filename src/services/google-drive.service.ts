@@ -20,7 +20,10 @@ export class GoogleDriveService {
   constructor() {
     const auth = new google.auth.GoogleAuth({
       credentials: JSON.parse(
-        Buffer.from(process.env.GOOGLE_CREDENTIALS, 'base64').toString('utf8'),
+        Buffer.from(
+          process.env.GOOGLE_CREDENTIALS.replace(/\\n/g, ''),
+          'base64',
+        ).toString('utf8'),
       ),
       scopes: ['https://www.googleapis.com/auth/drive'],
     });

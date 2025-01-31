@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2025.01.27  이유민      Created     
 2025.01.27  이유민      Modified    구글 드라이브 연동 추가
+2025.01.31  이유민      Modified    코드 리팩토링
 */
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { google } from 'googleapis';
@@ -18,7 +19,9 @@ export class GoogleDriveService {
 
   constructor() {
     const auth = new google.auth.GoogleAuth({
-      keyFile: process.env.GOOGLE_CREDENTIALS_PATH,
+      credentials: JSON.parse(
+        Buffer.from(process.env.GOOGLE_CREDENTIALS, 'base64').toString('utf8'),
+      ),
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
 

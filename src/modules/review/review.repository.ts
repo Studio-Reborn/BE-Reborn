@@ -11,6 +11,7 @@ Date        Author      Status      Description
 2025.01.07  이유민      Modified    에코마켓별 리뷰 조회 추가
 2025.01.10  이유민      Modified    코드 리팩토링
 2025.01.31  이유민      Modified    이미지 url 관련 오류 수정
+2025.02.03  이유민      Modified    마켓별 리뷰 조회 오류 수정
 */
 import {
   Injectable,
@@ -62,7 +63,7 @@ export class ReviewRepository {
 
   // 마켓별 리뷰 조회
   async findReviewByMarketId(market_id: number): Promise<Review[]> {
-    return await this.reviewRepository
+    const reviews = await this.reviewRepository
       .createQueryBuilder('review')
       .leftJoin('market_product', 'product', 'review.product_id = product.id')
       .leftJoin('market', 'market', 'product.market_id = market.id')
@@ -93,6 +94,14 @@ export class ReviewRepository {
       .andWhere('market.id = :market_id', { market_id })
       .orderBy('review.created_at', 'DESC')
       .getRawMany();
+
+    reviews.forEach((review) => {
+      if (review.product_image_url) {
+        review.product_image_url = JSON.parse(review.product_image_url);
+      }
+    });
+
+    return reviews;
   }
 
   // 리뷰 상세 조회

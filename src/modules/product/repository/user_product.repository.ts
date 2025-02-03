@@ -20,6 +20,7 @@ Date        Author      Status      Description
 2025.01.23  이유민      Modified    중고거래 사용자 검색 페이지네이션 추가
 2025.01.25  이유민      Modified    이미지 url 관련 오류 수정
 2025.01.31  이유민      Modified    이미지 url 관련 오류 수정
+2025.02.03  이유민      Modified    회원 탈퇴 오류 수정
 */
 import {
   Injectable,
@@ -237,9 +238,12 @@ export class UserProductRepository {
 
   // 유저의 모든 중고거래 제품 삭제
   async deleteProductByUserId(user_id: number): Promise<object> {
-    await this.userProductRepository.update(user_id, {
-      deleted_at: new Date(),
-    });
+    await this.userProductRepository.update(
+      { user_id },
+      {
+        deleted_at: new Date(),
+      },
+    );
 
     return { message: '성공적으로 삭제되었습니다.' };
   }

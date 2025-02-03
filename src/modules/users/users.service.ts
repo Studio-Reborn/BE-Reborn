@@ -15,6 +15,7 @@ Date        Author      Status      Description
 2025.01.05  이유민      Modified    검색 및 정렬 추가
 2025.01.09  이유민      Modified    사용자 정보 수정 추가
 2025.01.19  이유민      Modified    회원 탈퇴 추가
+2025.02.03  이유민      Modified    회원 탈퇴 오류 수정
 */
 import {
   ConflictException,
@@ -81,7 +82,7 @@ export class UsersService {
 
     // 회원의 에코마켓이 있는지 확인
     const isMarket = await this.marketRepository.findMarketByUserId(id);
-    if (isMarket)
+    if (isMarket.length > 0)
       throw new ConflictException(
         '활성화된 에코마켓 때문에 회원 탈퇴가 제한됩니다',
       );

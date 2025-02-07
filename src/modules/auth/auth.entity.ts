@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.11.07  이유민      Created     
 2024.11.07  이유민      Modified    회원 기능 추가
+2025.02.07  이유민      Modified    회원 테이블 리팩토링
 */
 import {
   Entity,
@@ -29,12 +30,6 @@ export class Auth {
 
   @Column({ default: null })
   refresh_token: string;
-
-  @Column({ default: 0 })
-  login_attempts: number;
-
-  @Column({ default: null })
-  last_login_at: Date;
 
   @CreateDateColumn()
   created_at: Date;

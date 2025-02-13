@@ -8,6 +8,7 @@ Date        Author      Status      Description
 2025.01.06  이유민      Created     
 2025.01.06  이유민      Modified    등급 정보 추가
 2025.01.06  이유민      Modified    사용자 등급 추가
+2025.02.13  이유민      Modified    swagger 설명 수정
 */
 import {
   Controller,
@@ -33,8 +34,8 @@ export class LevelController {
   @Post('/info')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '상품 좋아요 생성 API',
-    description: '상품 좋아요 데이터를 생성한다.',
+    summary: '등급 생성 API',
+    description: '관리자가 새로운 등급을 생성한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -58,8 +59,8 @@ export class LevelController {
   // 등급 전체 조회
   @Get('/info')
   @ApiOperation({
-    summary: '상품 좋아요 생성 API',
-    description: '상품 좋아요 데이터를 생성한다.',
+    summary: '등급 전체 조회 API',
+    description: '모든 등급을 조회한다.',
   })
   async findLevelInfoAll() {
     return await this.levelService.findLevelInfoAll();
@@ -69,8 +70,8 @@ export class LevelController {
   @Get('/user')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '상품 좋아요 생성 API',
-    description: '상품 좋아요 데이터를 생성한다.',
+    summary: '사용자의 등급 조회 API',
+    description: '사용자 본인의 등급을 조회한다.',
   })
   async findLevelAssignmentByUserId(@Req() req) {
     if (!req.user.user_id)

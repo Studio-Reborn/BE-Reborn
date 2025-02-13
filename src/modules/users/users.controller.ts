@@ -16,6 +16,7 @@ Date        Author      Status      Description
 2025.01.05  이유민      Modified    검색 및 정렬 추가
 2025.01.09  이유민      Modified    사용자 정보 수정 추가
 2025.01.19  이유민      Modified    회원 탈퇴 추가
+2025.02.13  이유민      Modified    swagger 설명 수정
 */
 import {
   Controller,
@@ -136,8 +137,8 @@ export class UsersController {
   @Delete()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '사용자 정보 수정 API',
-    description: '사용자의 정보를 수정한다.',
+    summary: '회원 탈퇴 API',
+    description: '리본 서비스에서 탈퇴한다.',
   })
   @ApiHeader({
     name: 'Authorization',

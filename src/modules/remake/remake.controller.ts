@@ -19,6 +19,7 @@ Date        Author      Status      Description
 2024.12.04  이유민      Modified    swagger 수정
 2024.12.18  이유민      Modified    id 타입 수정
 2025.01.22  이유민      Modified    페이지네이션 추가
+2025.02.13  이유민      Modified    swagger 설명 수정
 */
 import {
   Body,
@@ -77,7 +78,7 @@ export class RemakeController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '리메이크 요청 제품 전체 조회 API',
-    description: '요청된 리본 리메이크 제품을 전체 조회한다.',
+    description: '관리자가 사용자의 리메이크 제품 요청 내역을 전체 조회한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -96,7 +97,7 @@ export class RemakeController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '리메이크 요청 제품 삭제 API',
-    description: '요청된 리본 리메이크 제품을 삭제한다.',
+    description: '관리자가 사용자의 리메이크 제품 요청 내역을 삭제한다.',
   })
   @ApiHeader({
     name: 'Authorization',

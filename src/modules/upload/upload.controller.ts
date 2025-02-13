@@ -11,6 +11,7 @@ Date        Author      Status      Description
 2024.11.20  이유민      Modified    상품 이미지 업로드 추가
 2024.11.21  이유민      Modified    에코마켓 프로필 이미지 업로드 추가
 2025.01.27  이유민      Modified    구글 드라이브 연동 추가
+2025.02.13  이유민      Modified    swagger 설명 수정
 */
 import {
   Controller,
@@ -110,7 +111,6 @@ export class UploadController {
       fileName,
       mimeType,
     );
-    console.log(fileUrl);
 
     return await this.profileService.createProfile({
       url: fileUrl.split('uc?id=')[1],
@@ -119,10 +119,24 @@ export class UploadController {
 
   // 상품 이미지 업로드
   @Post('/product-image')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor('files'))
+  @ApiOperation({
+    summary: '상품 이미지 파일 업로드 API',
+    description: '상품의 이미지를 업로드한다.',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer 토큰 형식의 JWT',
+    required: true,
+  })
   async uploadProductImages(
+    @Req() req,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
+    if (!req.user)
+      throw new UnauthorizedException('로그인 후 이용 가능합니다.');
+
     const imagesUrl = [];
     for (let i = 0; i < files.length; i++) {
       const uploadDir = path.resolve(__dirname, '../../../uploads');

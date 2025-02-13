@@ -13,6 +13,7 @@ Date        Author      Status      Description
 2024.11.18  이유민      Modified    swagger 추가
 2024.12.04  이유민      Modified    role 추가
 2025.01.19  이유민      Modified    아이디 찾기 및 비밀번호 찾기 추가
+2025.02.13  이유민      Modified    swagger 설명 수정
 */
 import {
   Controller,
@@ -137,7 +138,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '비밀번호 변경 API',
-    description: '비밀번호를 변경한다.',
+    description: '사용자 비밀번호를 변경한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -187,7 +188,7 @@ export class AuthController {
   @Get('/find-password')
   @ApiOperation({
     summary: '비밀번호 찾기 API',
-    description: '비밀번호를 찾는다.',
+    description: '임시 비밀번호를 발급 받는다.',
   })
   async findPassword(
     @Query('email') email: string,

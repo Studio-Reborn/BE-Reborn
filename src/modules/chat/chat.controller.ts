@@ -7,6 +7,7 @@ History
 Date        Author      Status      Description
 2024.12.06  이유민      Created     
 2024.12.06  이유민      Modified    채팅 추가
+2025.02.13  이유민      Modified    swagger 설명 수정
 */
 import {
   Controller,
@@ -86,7 +87,7 @@ export class ChatController {
   @Get('/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '채팅방 조회 API',
+    summary: '개별 채팅방의 대화 내용 조회 API',
     description: '채팅방 ID를 이용해 채팅방과 대화 내용 등을 조회한다.',
   })
   @ApiHeader({

@@ -11,6 +11,7 @@ Date        Author      Status      Description
 2024.11.27  이유민      Modified    userId로 구매내역 조회 추가
 2025.01.18  이유민      Modified    내 마켓 관련 API 추가
 2025.01.18  이유민      Modified    리본 리메이크 판매 내역 추가
+2025.02.13  이유민      Modified    swagger 설명 수정
 */
 import {
   Controller,
@@ -125,8 +126,8 @@ export class BillingController {
   @Get('/item/remake')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '리본 리메이크 구매내역 조회 API',
-    description: '사용자 본인의 리본 리메이크 구매내역을 조회한다.',
+    summary: '관리자의 리본 리메이크 구매내역 전체 조회 API',
+    description: '관리자가 리본 리메이크 구매내역을 모두 조회한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -146,8 +147,8 @@ export class BillingController {
   @Patch('/item/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '리본 리메이크 구매내역 조회 API',
-    description: '사용자 본인의 리본 리메이크 구매내역을 조회한다.',
+    summary: '구매내역 아이템 수정 API',
+    description: '일반 사용자의 구매내역 아이템을 수정한다.',
   })
   @ApiHeader({
     name: 'Authorization',

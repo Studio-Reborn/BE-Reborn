@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2025.01.11  이유민      Modified    장바구니 추가
 2025.01.15  이유민      Modified    장바구니 아이템 추가
 2025.01.17  이유민      Modified    사용자의 모든 아이템 삭제 추가
+2025.02.13  이유민      Modified    swagger 설명 수정
 */
 import {
   Controller,
@@ -83,8 +84,8 @@ export class CartController {
   @Patch('/item/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '장바구니 아이템 수정 API',
-    description: '장바구니 아이템을 수정한다.',
+    summary: '장바구니 아이템 수량 수정 API',
+    description: '장바구니 아이템의 수량을 수정한다.',
   })
   @ApiHeader({
     name: 'Authorization',

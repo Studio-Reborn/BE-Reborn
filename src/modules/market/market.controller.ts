@@ -15,6 +15,7 @@ Date        Author      Status      Description
 2025.01.20  이유민      Modified    요청 반려 관련 API 추가
 2025.01.21  이유민      Modified    에코마켓 신청 철회 API 추가
 2025.01.23  이유민      Modified    에코마켓 관련 페이지네이션 추가
+2025.02.13  이유민      Modified    swagger 설명 수정
 */
 import {
   Controller,
@@ -67,7 +68,7 @@ export class MarketController {
   @Get()
   @ApiOperation({
     summary: '에코마켓 전체 조회 API',
-    description: '에코마켓을 전체 조회한다.',
+    description: '에코마켓을 모두 조회한다.',
   })
   async findMarketAll(
     @Query('sort') sort?: string,
@@ -96,8 +97,8 @@ export class MarketController {
   @Get('/my')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '에코마켓 개별 조회 API',
-    description: '에코마켓을 개별로 조회한다.',
+    summary: '사용자의 에코마켓 전체 조회 API',
+    description: '본인이 오픈한 에코마켓을 모두 조회한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -115,8 +116,8 @@ export class MarketController {
   @Get('/my/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '에코마켓 개별 조회 API',
-    description: '에코마켓을 개별로 조회한다.',
+    summary: '사용자의 에코마켓 개별 조회 API',
+    description: '본인이 오픈한 에코마켓을 개별로 조회한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -135,7 +136,7 @@ export class MarketController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '생성 요청된 에코마켓 전체 조회 API',
-    description: '생성 요청된 에코마켓을 전체 조회한다.',
+    description: '관리자가 생성 요청된 에코마켓을 전체 조회한다.',
   })
   async findCreateMarket(@Req() req) {
     if (req.user.role !== 'admin')
@@ -149,7 +150,7 @@ export class MarketController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '삭제 요청된 에코마켓 전체 조회 API',
-    description: '삭제 요청된 에코마켓을 전체 조회한다.',
+    description: '관리자가 삭제 요청된 에코마켓을 전체 조회한다.',
   })
   async findDeleteMarket(@Req() req) {
     if (req.user.role !== 'admin')
@@ -162,7 +163,7 @@ export class MarketController {
   @Patch('/request/check/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '생성 요청된 에코마켓 생성 API',
+    summary: '요청된 에코마켓 승인 API',
     description: '관리자가 생성 요청된 에코마켓을 확인 후 생성한다.',
   })
   @ApiHeader({
@@ -191,8 +192,8 @@ export class MarketController {
   @Patch('/retry/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '에코마켓 정보 수정 API',
-    description: '에코마켓 정보를 수정한다.',
+    summary: '에코마켓 오픈 재심사 API',
+    description: '오픈 반려된 에코마켓을 재심사 요청한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -288,8 +289,9 @@ export class MarketController {
   @Post('/rejection/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '삭제 요청된 에코마켓 삭제 API',
-    description: '관리자가 삭제 요청된 에코마켓을 확인 후 삭제한다.',
+    summary: '에코마켓 오픈 또는 삭제 요청 반려 API',
+    description:
+      '관리자가 오픈 요청 또는 삭제 요청된 에코마켓의 승인을 반려한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -316,8 +318,8 @@ export class MarketController {
   @Get('/rejection/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '삭제 요청된 에코마켓 삭제 API',
-    description: '관리자가 삭제 요청된 에코마켓을 확인 후 삭제한다.',
+    summary: '반려 사유 조회 API',
+    description: '사용자가 반려 사유를 조회한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -336,8 +338,8 @@ export class MarketController {
   @Patch('/rejection/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '삭제 요청된 에코마켓 삭제 API',
-    description: '관리자가 삭제 요청된 에코마켓을 확인 후 삭제한다.',
+    summary: '반려 사유 숨김 API',
+    description: '사용자가 에코마켓 반려 사유를 숨김 처리한다.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -356,8 +358,8 @@ export class MarketController {
   @Delete('/rejection/:id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '삭제 요청된 에코마켓 삭제 API',
-    description: '관리자가 삭제 요청된 에코마켓을 확인 후 삭제한다.',
+    summary: '에코마켓 오픈 신청 철회 API',
+    description: '사용자가 반려된 에코마켓의 오픈 신청을 철회한다.',
   })
   @ApiHeader({
     name: 'Authorization',

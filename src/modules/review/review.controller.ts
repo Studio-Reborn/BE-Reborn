@@ -9,6 +9,7 @@ Date        Author      Status      Description
 2024.12.19  이유민      Modified    리뷰 추가
 2024.12.28  이유민      Modified    리뷰 상세 조회 추가
 2025.01.07  이유민      Modified    에코마켓별 리뷰 조회 추가
+2025.02.13  이유민      Modified    swagger 설명 수정
 */
 import {
   Body,
@@ -88,7 +89,7 @@ export class ReviewController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '사용자별 작성 리뷰 조회 API',
-    description: '사용자별 작성 리뷰를 조회한다.',
+    description: '본인이 작성한 리뷰를 조회한다.',
   })
   @ApiHeader({
     name: 'Authorization',
